@@ -4,25 +4,15 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define MAX_VERBOSE_SIZE 100
+#define LONGMAX_INDICATIF_PT_REPORT 2 //longueur maximum d'un indicatif de point de report
+#define LONGMAX_ITINERAIRE 3          //nombre maximum de points de report pour un itineraire
 
-#define MAIN 0 //noir
-#define AVION 1 //bleu
-#define ATIS 2 //violet
-#define GND 3 //vert
-#define APP 4 //jaune
-#define TWR 5 //rouge
+#define KMTONM 0.539957 //convert factor kilometers -> nautic miles
 
-int main(int argc, char *argv[]){
-    time_t now = time(NULL);
-    struct tm ETA = *localtime(&now);
-    printf("Temps : %s\n",asctime(&ETA));
+int kmToNM(int km){return KMTONM*km;}
 
-    ColorVerbose(MAIN,1,"BONJOUR %i %i %i",0,1,78);
-    ColorVerbose(ATIS,1,"BONJOUR %i %i %i",0,1,78);
-    /* char buffer[50];
-    strcpy(buffer,"JE SUIS UNE LIGNE \nJE SUIS UNE AUTRE LIGNE"); 
-    printf("%s",buffer); */
-
+int main(int argc, char *argv[])
+{
+    printf("km : %i -> NM : %i",187,kmToNM(187));
     return 0;
 }

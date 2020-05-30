@@ -3,6 +3,8 @@ COMPILO=gcc
 
 OBJ = 	data.o 		\
 		atis.o		\
+		format.o	\
+		read_airports.o \
 		main.o
 
 all : build run
