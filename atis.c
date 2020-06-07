@@ -27,7 +27,7 @@ void generateAtis(){
 
 void printAtis(){
     ColorVerbose(ATIS,True,True,
-    "Ici Bale-Mulhouse, information %s enregistree a %i:%i UTC \n\
+    "Ici Bale-Mulhouse, information %s enregistree a %s:%s UTC \n\
     Piste en service legers et moyens porteurs : %s\n\
     Piste en service gros porteurs : %s\n\
     Vent du %i DEG %i KT\n\
@@ -35,5 +35,5 @@ void printAtis(){
     Temperature %i DEG CELSIUS\n\
     Point de rosee %i DEG CELSIUS\n\
     Calage altimetrique QNH %i QFE %i\n\
-    Informez %s recue au premier contact\n",OTAN_SPELL[CurrentATIS.id-65],CurrentATIS.rec_stamp.tm_hour,CurrentATIS.rec_stamp.tm_min,runways[CurrentATIS.runway_LM],runways[CurrentATIS.runway_big],CurrentATIS.wind_dir, CurrentATIS.wind_speed, visibility[CurrentATIS.visibility], CurrentATIS.temp, CurrentATIS.dew, CurrentATIS.QNH,CurrentATIS.QFE,OTAN_SPELL[CurrentATIS.id-65]);
+    Informez %s recue au premier contact\n",OTAN_SPELL[CurrentATIS.id-65],zfill(2,CurrentATIS.rec_stamp.tm_hour),zfill(2,CurrentATIS.rec_stamp.tm_min),runways[CurrentATIS.runway_LM],runways[CurrentATIS.runway_big],CurrentATIS.wind_dir, CurrentATIS.wind_speed, visibility[CurrentATIS.visibility], CurrentATIS.temp, CurrentATIS.dew, CurrentATIS.QNH,CurrentATIS.QFE,OTAN_SPELL[CurrentATIS.id-65]);
 }

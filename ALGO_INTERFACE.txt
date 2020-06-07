@@ -1,0 +1,75 @@
+FONCTION TousSortis(ensemble_avions) -> BOOLEEN
+    //verifie que tous les avions devant sortir de la CTR sont bien sortis
+    POUR avion DANS liste_avions FAIRE
+        SI extern_airport_type(avion) = FROM ET last_pos(avion)!=out ALORS
+            TousSortis -> FAUX
+    TousSortis -> VRAI
+FIN
+
+FONCTION TousEntres(ensemble_avions) -> BOOLEEN
+    //verifie que tous les avions devant sortir de la CTR sont bien sortis
+    POUR avion DANS liste_avions FAIRE
+        SI extern_airport_type(avion) = FROM ET last_pos(avion)!=out ALORS
+            TousEntres -> FAUX
+        FIN_SI
+    FIN_POUR
+    TousEntres -> VRAI
+FIN
+
+FONCTION MainMenu() -> ENTIER
+    ECRIRE("
+        1) Afficher le prochain echange radio
+        2) Changer la quantite de carburant d'un avion
+        3) Declarer un avion en panne
+    ")
+    Lire(MainMenu)
+FIN
+
+FONCTION ParseIndicatif(indicatif) -> ENTIER
+    pos = 0
+    TANT QUE NON(indicatif[pos]='-') FAIRE
+        pos++
+    ParseIndicatif <- pos
+
+FONCTION SelectPlane() -> ENTIER
+    avion target
+    TANT QUE target = INDEFINI FAIRE
+        STRING Indicatif
+        ECRIRE("Saisir l'indicatif de l'avion visé")
+        Lire(Indicatif)
+        pref_indicatif <- Indicatif[0:ParseIndicatif()] //renvoie l'emplacement du tiret dans l'indicatif saisi
+        suff_indicatif <- Indicatif[ParseIndicatif()+1:longueur(Indicatif)]
+        POUR avion DANS liste_avions FAIRE
+            SI registration_suffix(avion)=suff_indicatif ET registration_prefix(pays(dep_arr(avion)))=pref_indicatif ALORS
+                SelectPlane <- avion
+            FIN_SI
+        FIN_POUR
+        SI target = INDEFINI ALORS
+            ECRIRE("Avion inexistant, veuillez recommencer")
+        FIN_SI
+    FIN_TQ
+FIN
+
+MAIN:
+
+IMPORTER_AEROPORTS()
+IMPRIMER_AEROPORTS(France)
+IMPRIMER_AEROPORTS(Europe)
+
+TANT QUE NON(TousSortis) ET NON(TousEntres) FAIRE
+    CHOIX <- MainMenu()
+    CHOISIR PARMI (CHOIX)
+        CAS 1: //continuer
+            RIEN_FAIRE
+        CAS 2: //changer carburant
+            target = SelectPlane()
+            ECRIRE("Nouvelle quantite de carburant ? : ")
+            ENTIER new_qty
+            LIRE(new_qty)
+            fuel(target)=new_qty
+            SI new_qty<=fuel_threshold(avion) ALORS
+                SIGNAL(SIGURSR1) //MAYDAY MAYDAY MAYDAY
+        CAS 3: //declaration de panne
+            target = SelectPlane()
+            SIGNAL(SIGURSR2) //PAN PAN PAN
+FIN_TQ

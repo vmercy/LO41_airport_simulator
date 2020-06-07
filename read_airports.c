@@ -17,7 +17,7 @@ int ReadAirports()
     }
 
     char buf[1024];
-    int row_count = 0, total_readed;
+    int row_count = 0, total_readed = 0;
     int field_count = 0;
     while (fgets(buf, 1024, FichierEurope))
     {
@@ -28,7 +28,7 @@ int ReadAirports()
         {
             switch (field_count)
             {
-            case 0: //nom complet
+            case 0: //fullname
                 strcpy(EuropeanAirports[row_count].fullname, field);
                 //printf("Nom complet : %s | ", EuropeanAirports[row_count].nom);
                 break;
@@ -36,11 +36,11 @@ int ReadAirports()
                 strcpy(EuropeanAirports[row_count].iata, field);
                 //printf("IATA : %s | ", EuropeanAirports[row_count].iata);
                 break;
-            case 2: //sufixe OACI
+            case 2: //OACI suffix
                 strcpy(EuropeanAirports[row_count].oaci_suffix, field);
                 //printf("Suffixe OACI : %s\n", EuropeanAirports[row_count].suffixe_oaci);
                 break;
-            case 3: //index pays
+            case 3: //country index
             {
                 int index = atoi(field);
                 EuropeanAirports[row_count].host_country = EuropeanCountries[index];
@@ -51,6 +51,11 @@ int ReadAirports()
                 EuropeanAirports[row_count].distance = kmToNM(atoi(field));
                 break;
             }
+            case 5: //route
+            {
+                EuropeanAirports[row_count].prefered_route = BSL_pref_route[atoi(field)];
+                break;
+            }
             }
             //printf("%s\n", field);
             field = strtok(NULL, ";");
@@ -59,19 +64,20 @@ int ReadAirports()
         }
         row_count++;
     }
+    total_readed+=row_count;
     fclose(FichierEurope);
 
-    FILE *FichierFrance = fopen(EURFILE, "r");
+    FILE *FichierFrance = fopen(FRAFILE, "r");
 
-    if (!FichierEurope)
+    if (!FichierFrance)
     {
-        ColorVerbose(MAIN, False, True, "Erreur ouverture fichier %s\n",EURFILE);
+        ColorVerbose(MAIN, False, True, "Erreur ouverture fichier %s\n",FRAFILE);
         return 0;
     }
 
-    int row_count = 0;
-    int field_count = 0;
-    while (fgets(buf, 1024, FichierEurope))
+    row_count = 0;
+    field_count = 0;
+    while (fgets(buf, 1024, FichierFrance))
     {
         field_count = 0;
 
@@ -80,28 +86,27 @@ int ReadAirports()
         {
             switch (field_count)
             {
-            case 0: //nom complet
-                strcpy(EuropeanAirports[row_count].fullname, field);
+            case 0: //fullname
+                strcpy(FrenchAirports[row_count].fullname, field);
                 //printf("Nom complet : %s | ", EuropeanAirports[row_count].nom);
                 break;
             case 1: //IATA
-                strcpy(EuropeanAirports[row_count].iata, field);
+                strcpy(FrenchAirports[row_count].iata, field);
                 //printf("IATA : %s | ", EuropeanAirports[row_count].iata);
                 break;
-            case 2: //sufixe OACI
-                strcpy(EuropeanAirports[row_count].oaci_suffix, field);
+            case 2: //OACI suffix
+                strcpy(FrenchAirports[row_count].oaci_suffix, field);
                 //printf("Suffixe OACI : %s\n", EuropeanAirports[row_count].suffixe_oaci);
                 break;
-            case 3: //index pays
-            {
-                int index = atoi(field);
-                EuropeanAirports[row_count].host_country = EuropeanCountries[index];
-                break;
-            }
-            case 4: //distance
+            case 3: //distance
             {
                 int dist = atoi(field);
-                EuropeanAirports[row_count].distance = dist;
+                FrenchAirports[row_count].distance = dist;
+                break;
+            }
+            case 4: //route
+            {
+                FrenchAirports[row_count].prefered_route = BSL_pref_route[atoi(field)];
                 break;
             }
             }
@@ -110,36 +115,17 @@ int ReadAirports()
 
             field_count++;
         }
+        FrenchAirports[row_count].host_country = EuropeanCountries[FRANCE];
         row_count++;
     }
-    fclose(FichierEurope);
-
-
+    total_readed+=row_count;
+    fclose(FichierFrance);
     return total_readed;
-}
-
-int CountReportingPoints(route Route)
-{
-    int i = 0;
-    while(i<3&&Route.point_indexes[i]!=-1) i++;
-    /* printf("\033[31mNb Points Report : %i\033[0m", i); */
-    return i;
-}
-
-void PrintRoute(route Route)
-{
-    int nb_pts = CountReportingPoints(Route);
-    for (int i = 0; i < nb_pts; i++)
-    {
-        printf("%s", BSL_reporting_points[Route.point_indexes[i]].id);
-        if (i != (nb_pts - 1))
-            printf("-");
-    }
 }
 
 void PrintAeroportData(airport Aeroport)
 {
-    printf("Nom : %s | IATA : %s | OACI : %s%s | Itineraire preferentiel : ", Aeroport.fullname, Aeroport.iata, Aeroport.host_country.airport_prefix, Aeroport.oaci_suffix);
+    ColorVerbose(MAIN,False,False,"Nom : %s | IATA : %s | OACI : %s%s | Itineraire preferentiel : ", Aeroport.fullname, Aeroport.iata, Aeroport.host_country.airport_prefix, Aeroport.oaci_suffix);
     PrintRoute(Aeroport.prefered_route);
-    printf(" | Distance BSL : %i\n",Aeroport.distance);
+    ColorVerbose(MAIN,False,False," | Distance BSL : %i\n",Aeroport.distance);
 }

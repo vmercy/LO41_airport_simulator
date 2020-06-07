@@ -1,5 +1,29 @@
 #include <time.h>
 
+/* Semaphores */
+#define IFLAGS (SEMPERM | IPC_CREAT)
+#define SKEY (key_t) IPC_PRIVATE
+#define SEMPERM 0666 // Permission
+#define NB_SEMAPHORES 3 //TODO: set to 1
+
+#define SEM_PRINTF 0 //semaphore utilise pour rendre atomique la fonction printf
+#define SEM_2500 1 //semaphore utilise pour proteger l acces a la piste de 2500m (33L-15R)
+#define SEM_4000 2 //semaphore utilise pour proteger l acces a la piste de 4000m (33R-15L)
+
+/* Parameters */
+#define EURFILE "AeroportsEurope.csv" //csv list of european airports
+#define FRAFILE "AeroportsFrance.csv" //csv list of french airports
+
+#define DOMESTIC_PROBABILITY 50 //probability (in percent) that generated plane is affected to a domestic flight (BSL->France or France->BSL)
+#define LOCAL_PROBABILITY 50 //probability of generating a local flight (BSL->BSL), knowing that this aircraft is affected to a domestic flight
+
+#define NB_AIRPORTS_FRANCE 20 //BSL excluded
+#define NB_AIRPORTS_EUROPE 10 //BSL excluded
+/* End of parameters */
+
+#define DEFAULT_NB_AVION 5         //default number of aircrafts to generate
+#define DEFAULT_CAPACITE_PARKING 10 //default max number of aircrafts in BSL parking
+
 #define OTAN_SPELL_MAXLENGTH 9
 #define REGISTRATION_SUFFIX_MAXLENGTH 4 //max length of an aircraft registration suffix (F-___)
 #define REGISTRATION_PREFIX_MAXLENGTH 2 //max length of an aircraft registration (_-HATF)
@@ -11,20 +35,11 @@
 #define AIRPORT_NAME_MAXLENGTH 30       //max length of an airport name
 #define IATA_MAXLENGTH 3                //max length of an IATA code
 
-#define EURFILE "AeroportsEurope.csv" //csv list of european airports
-#define FRAFILE "AeroportsFrance.csv" //csv list of french airports
-
-#define DEFAULT_NB_AVION 20         //default number of aircrafts to generate
-#define DEFAULT_CAPACITE_PARKING 10 //default max number of aircrafts in BSL parking
-
-#define NB_AIRPORTS_FRANCE 20 //BSL excluded
-#define NB_AIRPORTS_EUROPE 10 //BSL excluded
-
 #define BSL_ALTITUDE 885 //altitude of BSL airport, used to compute the difference QNH-QFE
 
 /* Roles for display on terminal */
 #define MAIN 0  //black
-#define AVION 1 //blue
+#define PLANE 1 //blue
 #define ATIS 2  //magenta
 #define GND 3   //green
 #define APP 4   //yellow
@@ -51,6 +66,8 @@
 #define False 0
 
 /* Used countries */
+#define NB_EUROPEAN_COUTRIES 8
+
 #define FRANCE 0
 #define UK 1
 #define NETHERLANDS 2
@@ -63,12 +80,21 @@
 /* Types of aircraft */
 #define LIGHT 0
 #define MEDIUM 1
-#define BIG 2
+#define JUMBO 2 //big heavy plane
 
 /* States of aircraft */
 #define GROUND 0
 #define AIR 1
 #define DISTRESS 2 //triggered by MAYDAY MAYDAY MAYDAY call (SIGUSR1 signal)
+
+/* Types of travels relative to BSL airport */
+#define FROM 0
+#define TO 1
+
+/* Preferential Routes */
+#define NORTH 0
+#define SOUTH 1
+#define WEST 2
 
 #define KMTONM 0.539957 //convert factor kilometers -> nautic miles
 
@@ -89,7 +115,7 @@ typedef struct
 
 typedef struct
 {
-  int point_indexes[ROUTE_MAXLENGTH]; //contains the indexes of reporting points belonging to the route inside BSL_report_points
+  int point_indexes[ROUTE_MAXLENGTH]; //contains the indexes of reporting points belonging to the route inside BSL_report_points, with a -1 padding if necessary
 } route;
 
 typedef struct
@@ -106,7 +132,7 @@ typedef struct
 {
   char registration_suffix[REGISTRATION_SUFFIX_MAXLENGTH + 1]; //suffix of the registration code (preceded by the prefix of country hosting its airport below)
   airport dep_arr;                                             //departure or arrival airport, can be BSL in case of a local flight
-  int extern_airport_type;                                     //0 if airport above is arrival one (departure is BSL), 1 otherwise
+  bool extern_airport_type;                                     //FROM if airport above is arrival one (departure is BSL), TO otherwise. If airport above is BSL (local flight) then extern_airport_type determines whether the aircraft is leaving or arriving (FROM/TO)
   int aircraft_type;                                           //LIGHT,MEDIUM or BIG
   int state;                                                   //GROUND, AIR or DISTRESS
   report_pt last_pos;                                          //last known position of aircraft,
@@ -130,15 +156,17 @@ typedef struct
 } condAtis;
 
 /* Global constants */
-country EuropeanCountries[8];
-airport FrenchAirports[20];
-airport EuropeanAirports[10];
+country EuropeanCountries[NB_EUROPEAN_COUTRIES];
+airport FrenchAirports[NB_AIRPORTS_FRANCE];
+airport EuropeanAirports[NB_AIRPORTS_EUROPE];
 airport BSL; //main airport. Fullname : BASEL EUROAIRPORT, IATA : BSL, OACI : LFSB
 char OTAN_SPELL[26][OTAN_SPELL_MAXLENGTH]; //international OTAN spelling alphabet
 char *runways[4];
 char *visibility[2];
+char *aircraftCompleteType[3];
 report_pt BSL_reporting_points[7];
-report_pt ground; //used to localize aircrafts in BSL maneuvering area (parking and taxiways)
+report_pt ground; //used to localize aircrafts in BSL parking
+report_pt out; //used to localize aircrafts that are outside BSL region
 route BSL_pref_route[3];
 
 /* Global functions */
@@ -149,7 +177,19 @@ void initializeData();
 int ReadAirports();
 void PrintAeroportData(airport Aeroport);
 void PrintRoute(route Route);
+/* void PrintRouteRaw(route Route); */
+char* zfill(int length, int value);
+int createPlanesProcesses();
+route reverseRoute(route Route);
+void initializeSemaphores();
+void V(int semnum);
+void P(int semnum);
+int initsem(key_t semkey);
+void initializeSemaphores();
+int getVal(int semnum);
 
 /* Global Variables */
+pid_t main_pid;
+int semid;
 int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;

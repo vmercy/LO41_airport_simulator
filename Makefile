@@ -5,6 +5,9 @@ OBJ = 	data.o 		\
 		atis.o		\
 		format.o	\
 		read_airports.o \
+		plane.o		\
+		route.o	\
+		semaphores.o \
 		main.o
 
 all : build run
