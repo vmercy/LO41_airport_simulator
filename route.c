@@ -77,12 +77,13 @@ void PrintRoute(route Route)
     }
 }
 
-report_pt ReportPointAtIndex(int point_index, route Route){
-    for(int i = 0;i<CountReportingPoints(Route);i++){
+report_pt ReportPointAtIndex(int point_index, route Route){ //returns the i-th point of route
+    return BSL_reporting_points[Route.point_indexes[point_index]];
+    /* for(int i = 0;i<CountReportingPoints(Route);i++){
         if(Route.point_indexes[i]==point_index)
             return BSL_reporting_points[i];
     }
-    return out;
+    return out; */
 }
 
 /* void PrintRouteRaw(route Route)

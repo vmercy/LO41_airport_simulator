@@ -87,8 +87,8 @@ void planeProcess()
     Plane.ETA.tm_min = 0;
     Plane.state = NORMAL;
     P(SEM_PRINTF);
-    ColorVerbose(PLANE, True, True, "Avion initialise | PID : %i | Immatriculation : \n", Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix);
-    fflush(stdout);
+    ColorVerbose(PLANE, True, True, "Avion initialise | PID : %i | Immatriculation : %s-%s\n", Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix);
+    //fflush(stdout);
     V(SEM_PRINTF);
     switch (Plane.extern_airport_type)
     {
@@ -116,7 +116,7 @@ void planeProcess()
             Actuellement au parking \n\
             Demandons roulage pour piste %s\n\
             ",Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.squawk,runways[Plane.UsedRunway]);
-        fflush(stdout);
+        //fflush(stdout);
         V(SEM_PRINTF);
 
         break;
@@ -127,12 +127,13 @@ void planeProcess()
     {
         report_pt lastPos = out;
         route myRoute = reverseRoute(Plane.dep_arr.prefered_route);
+
         P(SEM_PRINTF);
         for(int i = 0; i<CountReportingPoints(myRoute);i++){
             lastPos = ReportPointAtIndex(i,myRoute);
             ColorVerbose(PLANE,False,True,"%s-%s : Je passe le point %s \n",Plane.
             dep_arr.host_country.registration_prefix,Plane.registration_suffix,lastPos.id);
-            fflush(stdout);
+            //fflush(stdout);
             sleep(1); //sleep depending of cruising speed
         }
         Plane.last_pos = lastPos;
@@ -146,7 +147,7 @@ void planeProcess()
             Passant le point %s \n\
             Demandons integration pour atterrissage complet\n\
             ",Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.last_pos.id);
-        fflush(stdout);
+        //fflush(stdout);
         V(SEM_PRINTF);
         break;
     }

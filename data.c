@@ -11,63 +11,63 @@ char *visibility[2] = {"MAUVAISE", "CAVOK"};
 void initializeData()
 {
     for(int i =0; i<NB_EUROPEAN_COUTRIES;i++)
-        strcpy(EuropeanCountries[i].registration_prefix,"");
+        sprintf(EuropeanCountries[i].registration_prefix,"");
 
-    strcpy(EuropeanCountries[FRANCE].airport_prefix, "LF");
-    strcpy(EuropeanCountries[FRANCE].registration_prefix, "F");
+    sprintf(EuropeanCountries[FRANCE].airport_prefix, "LF");
+    sprintf(EuropeanCountries[FRANCE].registration_prefix, "F");
 
-    strcpy(EuropeanCountries[UK].airport_prefix, "EG");
-    strcpy(EuropeanCountries[UK].registration_prefix, "G");
+    sprintf(EuropeanCountries[UK].airport_prefix, "EG");
+    sprintf(EuropeanCountries[UK].registration_prefix, "G");
 
-    strcpy(EuropeanCountries[NETHERLANDS].airport_prefix, "EH");
-    strcpy(EuropeanCountries[NETHERLANDS].registration_prefix, "PH");
+    sprintf(EuropeanCountries[NETHERLANDS].airport_prefix, "EH");
+    sprintf(EuropeanCountries[NETHERLANDS].registration_prefix, "PH");
 
-    strcpy(EuropeanCountries[GERMANY].airport_prefix, "ED");
-    strcpy(EuropeanCountries[GERMANY].registration_prefix, "D");
+    sprintf(EuropeanCountries[GERMANY].airport_prefix, "ED");
+    sprintf(EuropeanCountries[GERMANY].registration_prefix, "D");
 
-    strcpy(EuropeanCountries[SPAIN].airport_prefix, "LE");
-    strcpy(EuropeanCountries[SPAIN].registration_prefix, "EC");
+    sprintf(EuropeanCountries[SPAIN].airport_prefix, "LE");
+    sprintf(EuropeanCountries[SPAIN].registration_prefix, "EC");
 
-    strcpy(EuropeanCountries[TURKEY].airport_prefix, "LT");
-    strcpy(EuropeanCountries[TURKEY].registration_prefix, "TC");
+    sprintf(EuropeanCountries[TURKEY].airport_prefix, "LT");
+    sprintf(EuropeanCountries[TURKEY].registration_prefix, "TC");
 
-    strcpy(EuropeanCountries[RUSSIA].airport_prefix, "UU");
-    strcpy(EuropeanCountries[RUSSIA].registration_prefix, "RA");
+    sprintf(EuropeanCountries[RUSSIA].airport_prefix, "UU");
+    sprintf(EuropeanCountries[RUSSIA].registration_prefix, "RA");
 
-    strcpy(EuropeanCountries[ITALY].airport_prefix, "LI");
-    strcpy(EuropeanCountries[ITALY].registration_prefix, "I");
+    sprintf(EuropeanCountries[ITALY].airport_prefix, "LI");
+    sprintf(EuropeanCountries[ITALY].registration_prefix, "I");
 
-    strcpy(BSL.iata, "BSL");
-    strcpy(BSL.fullname, "Bale-Mulhouse");
-    strcpy(BSL.oaci_suffix, "SB");
+    sprintf(BSL.iata, "BSL");
+    sprintf(BSL.fullname, "Bale-Mulhouse");
+    sprintf(BSL.oaci_suffix, "SB");
     BSL.distance = 0;
     BSL.host_country = EuropeanCountries[FRANCE];
 
-    strcpy(BSL_reporting_points[0].id, "E");
+    sprintf(BSL_reporting_points[0].id, "E");
     BSL_reporting_points[0].pref_alt = 2500;
     BSL_reporting_points[0].nb_aircrafts = 0;
 
-    strcpy(BSL_reporting_points[1].id, "N");
+    sprintf(BSL_reporting_points[1].id, "N");
     BSL_reporting_points[1].pref_alt = 2500;
     BSL_reporting_points[1].nb_aircrafts = 0;
-    
-    strcpy(BSL_reporting_points[2].id, "NE");
+
+    sprintf(BSL_reporting_points[2].id, "NE");
     BSL_reporting_points[2].pref_alt = 2500;
     BSL_reporting_points[2].nb_aircrafts = 0;
 
-    strcpy(BSL_reporting_points[3].id, "S");
+    sprintf(BSL_reporting_points[3].id, "S");
     BSL_reporting_points[3].pref_alt = 3000;
     BSL_reporting_points[3].nb_aircrafts = 0;
 
-    strcpy(BSL_reporting_points[4].id, "W");
+    sprintf(BSL_reporting_points[4].id, "W");
     BSL_reporting_points[4].pref_alt = 3000;
     BSL_reporting_points[4].nb_aircrafts = 0;
 
-    strcpy(BSL_reporting_points[5].id, "WA");
+    sprintf(BSL_reporting_points[5].id, "WA");
     BSL_reporting_points[5].pref_alt = 3000;
     BSL_reporting_points[5].nb_aircrafts = 0;
 
-    strcpy(BSL_reporting_points[6].id, "WB");
+    sprintf(BSL_reporting_points[6].id, "WB");
     BSL_reporting_points[6].pref_alt = 2500;
     BSL_reporting_points[6].nb_aircrafts = 0;
 
@@ -83,7 +83,11 @@ void initializeData()
 
     BSL.prefered_route = BSL_pref_route[NORTH]; //we consider that local flights are do to and from west
 
-    strcpy(ground.id, "");
     ground.nb_aircrafts = 0;
+    sprintf(ground.id,"SOL");
+    ground.pref_alt = BSL_ALTITUDE;
+
+    out.nb_aircrafts = 0;
+    sprintf(out.id,"SOL");
     ground.pref_alt = BSL_ALTITUDE;
 }
