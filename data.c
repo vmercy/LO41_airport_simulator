@@ -50,7 +50,7 @@ void initializeData()
     strcpy(BSL_reporting_points[1].id, "N");
     BSL_reporting_points[1].pref_alt = 2500;
     BSL_reporting_points[1].nb_aircrafts = 0;
-
+    
     strcpy(BSL_reporting_points[2].id, "NE");
     BSL_reporting_points[2].pref_alt = 2500;
     BSL_reporting_points[2].nb_aircrafts = 0;
@@ -80,6 +80,8 @@ void initializeData()
     BSL_pref_route[WEST].point_indexes[0] = 6;
     BSL_pref_route[WEST].point_indexes[1] = 5;
     BSL_pref_route[WEST].point_indexes[2] = 4;
+
+    BSL.prefered_route = BSL_pref_route[NORTH]; //we consider that local flights are do to and from west
 
     strcpy(ground.id, "");
     ground.nb_aircrafts = 0;

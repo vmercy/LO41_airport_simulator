@@ -8,6 +8,7 @@
 //Imprime sur stdout avec la bonne coloration en fonction du role
 void ColorVerbose(int role, bool header, bool jump, char *fmt, ...)
 {
+    //P(SEM_PRINTF);
     va_list argsList;
     if (jump)
         printf("\n");
@@ -51,7 +52,8 @@ void ColorVerbose(int role, bool header, bool jump, char *fmt, ...)
     va_start(argsList, fmt);
     vprintf(fmt, argsList);
     va_end(argsList);
-    printf("\033[0m"); //reset
+    //printf("\033[0m"); //reset
+    //V(SEM_PRINTF);
     fflush(stdout);
 }
 

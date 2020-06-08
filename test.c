@@ -3,14 +3,48 @@
 #include <time.h>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
 
-#define LONGMAX_INDICATIF_PT_REPORT 2 //longueur maximum d'un indicatif de point de report
-#define LONGMAX_ITINERAIRE 3          //nombre maximum de points de report pour un itineraire
-
-#define FILENAME "hello.txt"
+void traitantSIGUSR1(int num)
+{
+}
 
 int main(int argc, char *argv[])
 {
-    printf("-2 mod 3 = %i",(-2)%3);
+    char string[100];
+    sprintf(string,"bonjour");
+    printf("%s\n",string);
+    sprintf(string,"bonjourkngioejvo");
+    printf("%s\n",string);
+    /* pid_t pid = fork();
+    switch (pid)
+    {
+    case 0: //fils
+        signal(SIGUSR1,traitantSIGUSR1);
+        int i = 0;
+        for (i = 0; i < 5; i++)
+        {
+            printf("\nFils : i = %i",i);
+            pause();
+        }
+        exit(0);
+        break;
+
+    default: //pere
+        while (1)
+        {
+            int rep = 0;
+            printf("\nEntrer 1 pour continuer");
+            while (rep!=1)
+            {
+                scanf("%i",&rep);
+                kill(pid,SIGUSR1);
+            }
+        }
+        wait(NULL);
+        break;
+    } */
     return 0;
 }

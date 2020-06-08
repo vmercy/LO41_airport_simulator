@@ -1,0 +1,80 @@
+FONCTION DETRESSE() //declenchee par le signal SIGUSR1
+    Ecrire("MAYDAY MAYDAY MAYDAY")
+    //atterrir
+    V(SEM_DETRESSE)
+FIN_FONCTION
+
+FONCTION PANNE() //declenchee par le signal SIGUSR2
+    SI(CompteNbDetresse()>0) ALORS
+        P(SEM_DETRESSE)
+    Ecrire("PAN PAN PAN")
+    //atterrir
+    V(SEM_PANNE)
+
+//on ignore la capacite du parking
+FIN_FONCTION
+
+SEMAPHORES:
+SEM_PANNE
+SEM_DETRESSE
+SEM_2500_DEC
+SEM_2500_ATT
+SEM_4000_DEC
+SEM_4000_ATT
+SEM_PARKING
+
+MAIN :
+CHOISIR_PARMI(intention):
+    avion <- InitialiserAvion()
+    AttenteAleatoire()
+    CAS DECOLLER:
+        SI CompteNbDetresse()>=0 ALORS
+            P(SEM_DETRESSE)
+        FIN_SI
+        SI CompteNbPanne()>=0 ALORS
+            P(SEM_PANNE)
+        FIN_SI
+        SI type(avion) = LEGER OU type(avion) = MOYEN_PORTEUR ALORS
+            SI(NbAttenteAtterrissage2500>0) ALORS
+                P(SEM_2500_ATT)
+            FIN_SI
+            Ecrire("Attente pour decollage piste ",AtisCourant.piste_leger)
+            P(SEM_2500_DEC)
+            Ecrire("Je decolle")
+            V(SEM_2500_DEC)
+            Ecrire("J'ai décollé")
+        SINON //gros porteur
+            //meme chose mais avec la piste 4000
+        FIN_SI
+        V(SEM_PARKING)
+        POUR point_report DANS itineraire FAIRE
+            Afficher("Au point tournant",last_pos," Altitude : ",altitude_pref(last_pos)+nb_avions(last_pos)*SEPARATION)
+        FIN_POUR
+        Ecrire("Dernier point de report passe. Debut de croisiere pour rejoindre ",a,". Je quitte la frequence, aurevoir")
+
+    CAS ATTERRIR:
+        POUR point_report DANS reverse(itineraire) FAIRE
+            Afficher("Au point tournant",last_pos," Altitude : ",altitude_pref(last_pos)+nb_avions(last_pos)*SEPARATION)
+        FIN_POUR
+        SI CompteNbDetresse()>=0 ALORS
+            P(SEM_DETRESSE)
+        FIN_SI
+        SI CompteNbPanne()>=0 ALORS
+            P(SEM_PANNE)
+        FIN_SI
+        P(PARKING)
+        SI type(avion) = LEGER OU type(avion) = MOYEN_PORTEUR ALORS
+            Ecrire("Demandons atterrissage sur piste ",AtisCourant.piste_leger)
+            P(SEM_2500_ATT)
+            Ecrire("Atterrissage piste ",AtisCourant.piste_legers)
+            V(SEM_2500_ATT)
+        SINON //gros porteur
+            Ecrire("Demandons atterrissage sur piste ",AtisCourant.piste_leger)
+            P(SEM_4000_ATT)
+            Ecrire("Atterrissage piste ",AtisCourant.piste_legers)
+            V(SEM_4000_ATT)
+            SI val(SEM_4000_ATT) == 1 //plus personne ne veut atterrir
+                V(SEM_4000_DEC) //on autorise les avions a decoller
+            FIN_SI
+        FIN_SI
+FIN_CP

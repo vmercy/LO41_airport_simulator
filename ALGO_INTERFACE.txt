@@ -21,6 +21,7 @@ FONCTION MainMenu() -> ENTIER
         1) Afficher le prochain echange radio
         2) Changer la quantite de carburant d'un avion
         3) Declarer un avion en panne
+        4) Regenerer l'ATIS (message d'information)
     ")
     Lire(MainMenu)
 FIN
@@ -72,4 +73,6 @@ TANT QUE NON(TousSortis) ET NON(TousEntres) FAIRE
         CAS 3: //declaration de panne
             target = SelectPlane()
             SIGNAL(SIGURSR2) //PAN PAN PAN
+        CAS 4:
+            genererAtis()
 FIN_TQ

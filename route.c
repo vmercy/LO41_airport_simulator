@@ -77,6 +77,14 @@ void PrintRoute(route Route)
     }
 }
 
+report_pt ReportPointAtIndex(int point_index, route Route){
+    for(int i = 0;i<CountReportingPoints(Route);i++){
+        if(Route.point_indexes[i]==point_index)
+            return BSL_reporting_points[i];
+    }
+    return out;
+}
+
 /* void PrintRouteRaw(route Route)
 {
     for (int i = 0; i < ROUTE_MAXLENGTH; i++)

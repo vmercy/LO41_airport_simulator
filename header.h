@@ -1,4 +1,5 @@
 #include <time.h>
+#include <sys/types.h>
 
 /* Semaphores */
 #define IFLAGS (SEMPERM | IPC_CREAT)
@@ -36,6 +37,7 @@
 #define IATA_MAXLENGTH 3                //max length of an IATA code
 
 #define BSL_ALTITUDE 885 //altitude of BSL airport, used to compute the difference QNH-QFE
+#define SEPARATION 
 
 /* Roles for display on terminal */
 #define MAIN 0  //black
@@ -83,9 +85,9 @@
 #define JUMBO 2 //big heavy plane
 
 /* States of aircraft */
-#define GROUND 0
-#define AIR 1
-#define DISTRESS 2 //triggered by MAYDAY MAYDAY MAYDAY call (SIGUSR1 signal)
+#define NORMAL 0
+#define DISTRESS 1 //triggered by MAYDAY MAYDAY MAYDAY call (SIGUSR1 signal)
+#define PAN 2
 
 /* Types of travels relative to BSL airport */
 #define FROM 0
@@ -130,6 +132,7 @@ typedef struct
 
 typedef struct
 {
+  pid_t pid;
   char registration_suffix[REGISTRATION_SUFFIX_MAXLENGTH + 1]; //suffix of the registration code (preceded by the prefix of country hosting its airport below)
   airport dep_arr;                                             //departure or arrival airport, can be BSL in case of a local flight
   bool extern_airport_type;                                     //FROM if airport above is arrival one (departure is BSL), TO otherwise. If airport above is BSL (local flight) then extern_airport_type determines whether the aircraft is leaving or arriving (FROM/TO)
@@ -141,6 +144,7 @@ typedef struct
   int fuel_threshold;                                          //threshold that triggers fuel distress if reached from superior value
   int cruising_speed;                                          //in kt
   struct tm ETA;                                               //estimated time arrival, computed from cruising speed above
+  int UsedRunway;
 } aircraft;
 
 typedef struct
@@ -187,9 +191,14 @@ void P(int semnum);
 int initsem(key_t semkey);
 void initializeSemaphores();
 int getVal(int semnum);
+int InitializeSignal();
+void tower();
+void CleanIPCs();
+int CountReportingPoints(route Route);
+report_pt ReportPointAtIndex(int point_index, route Route);
 
 /* Global Variables */
 pid_t main_pid;
-int semid;
+int semid, shmid;
 int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;

@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "header.h"
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <string.h>
+#include "header.h"
 
 #define DOMESTIC 1
 #define LOCAL 1
@@ -34,8 +34,9 @@ bool randomizeProb(int prob)
 
 void planeProcess()
 {
-    srand(time(0)^getpid());
+    srand(time(0) ^ getpid());
     aircraft Plane;
+    Plane.pid = getpid();
     strcpy(Plane.registration_suffix, randomizeRegistrationSuffix());
     Plane.aircraft_type = rand() % 3;
     switch (Plane.aircraft_type)
@@ -52,7 +53,7 @@ void planeProcess()
         Plane.cruising_speed = 450 + rand() % 51;
         break;
     }
-    Plane.extern_airport_type = rand()%2; //50 percent chance that Plane is travelling from/to BSL airport
+    Plane.extern_airport_type = rand() % 2; //50 percent chance that Plane is travelling from/to BSL airport
     switch (randomizeProb(DOMESTIC_PROBABILITY))
     {
     case DOMESTIC: //France to France flight
@@ -63,12 +64,12 @@ void planeProcess()
             break;
 
         default: //non local
-            Plane.dep_arr = FrenchAirports[rand()%NB_AIRPORTS_FRANCE];
+            Plane.dep_arr = FrenchAirports[rand() % NB_AIRPORTS_FRANCE];
             break;
         }
         break;
     default: //extern flight
-        Plane.dep_arr = EuropeanAirports[rand()%NB_AIRPORTS_EUROPE];
+        Plane.dep_arr = EuropeanAirports[rand() % NB_AIRPORTS_EUROPE];
         break;
     }
     switch (Plane.extern_airport_type)
@@ -76,34 +77,80 @@ void planeProcess()
     case FROM:
         Plane.last_pos = ground;
         break;
-    
+
     default: //TO
         Plane.last_pos = out;
         break;
     }
     Plane.squawk = 7000;
-    fflush(stdout);
-    //printf("\nJe suis %i et je veux entrer dans la section critique\n",getpid());
+    Plane.ETA.tm_hour = 0;
+    Plane.ETA.tm_min = 0;
+    Plane.state = NORMAL;
     P(SEM_PRINTF);
-    //printf("\nValeur apres P : %i",getVal(SEM_PRINTF));
+    ColorVerbose(PLANE, True, True, "Avion initialise | PID : %i | Immatriculation : \n", Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix);
     fflush(stdout);
-    ColorVerbose(PLANE, True, True,
-            "PID : %i \n\
+    V(SEM_PRINTF);
+    switch (Plane.extern_airport_type)
+    {
+    case FROM:
+    {
+        switch (Plane.aircraft_type==LIGHT||Plane.aircraft_type==MEDIUM)
+        {
+        case 1:
+            Plane.UsedRunway =  CurrentATIS.runway_LM;
+            break;
+        
+        default:
+            Plane.UsedRunway =  CurrentATIS.runway_big;
+            break;
+        }
+        P(SEM_PRINTF);
+        ColorVerbose(PLANE, True, True," \
+            PID %i\n\
             Bale-Mulhouse de %s-%s bonjour \n\
-            Pays de prov-dep : %s\n\
             Avion %s \n\
-            En provenance de BSL \n\
             A destination de %s \n\
             Avec l'information %s \n\
             Vitesse de croisiere %i \n\
-            ",
-                 getpid(),Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed);
-    //TODO: cut preceeding verbose in two parts
-    printf("\nJe suis %i et je suis en section critique\n",getpid());
-    V(SEM_PRINTF);
-    //printf("\nJe suis %i et je suis sorti de la section critique\n",getpid());
-    fflush(stdout);
-    //printf("\nValeur apres V : %i",getVal(SEM_PRINTF));
+            Transpondeur %i \n\
+            Actuellement au parking \n\
+            Demandons roulage pour piste %s\n\
+            ",Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.squawk,runways[Plane.UsedRunway]);
+        fflush(stdout);
+        V(SEM_PRINTF);
+
+        break;
+
+        //afficher circuit de depart complet
+    }
+    case TO:
+    {
+        report_pt lastPos = out;
+        route myRoute = reverseRoute(Plane.dep_arr.prefered_route);
+        P(SEM_PRINTF);
+        for(int i = 0; i<CountReportingPoints(myRoute);i++){
+            lastPos = ReportPointAtIndex(i,myRoute);
+            ColorVerbose(PLANE,False,True,"%s-%s : Je passe le point %s \n",Plane.
+            dep_arr.host_country.registration_prefix,Plane.registration_suffix,lastPos.id);
+            fflush(stdout);
+            sleep(1); //sleep depending of cruising speed
+        }
+        Plane.last_pos = lastPos;
+        ColorVerbose(PLANE, True, True," \
+            Bale-Mulhouse de %s-%s bonjour \n\
+            Avion %s \n\
+            En provenance de %s \n\
+            A destination de vos installations \n\
+            Avec l'information %s \n\
+            Vitesse de croisiere %i \n\
+            Passant le point %s \n\
+            Demandons integration pour atterrissage complet\n\
+            ",Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.last_pos.id);
+        fflush(stdout);
+        V(SEM_PRINTF);
+        break;
+    }
+    }
 }
 
 int createPlanesProcesses()
