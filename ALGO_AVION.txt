@@ -21,7 +21,11 @@ SEM_2500_DEC
 SEM_2500_ATT
 SEM_4000_DEC
 SEM_4000_ATT
-SEM_PARKING
+SEM_PARKING initialisé au nombre de places de parking
+
+VARIABLES GLOBALES EN SHM: //a utiliser seulement si difficulte avec les semaphores
+NbAttenteAtterrissage2500
+NbAttenteAtterrissage4000
 
 MAIN :
 CHOISIR_PARMI(intention):
@@ -35,9 +39,6 @@ CHOISIR_PARMI(intention):
             P(SEM_PANNE)
         FIN_SI
         SI type(avion) = LEGER OU type(avion) = MOYEN_PORTEUR ALORS
-            SI(NbAttenteAtterrissage2500>0) ALORS
-                P(SEM_2500_ATT)
-            FIN_SI
             Ecrire("Attente pour decollage piste ",AtisCourant.piste_leger)
             P(SEM_2500_DEC)
             Ecrire("Je decolle")
@@ -62,19 +63,17 @@ CHOISIR_PARMI(intention):
         SI CompteNbPanne()>=0 ALORS
             P(SEM_PANNE)
         FIN_SI
+	Afficher("Attente parking...")
         P(PARKING)
         SI type(avion) = LEGER OU type(avion) = MOYEN_PORTEUR ALORS
             Ecrire("Demandons atterrissage sur piste ",AtisCourant.piste_leger)
             P(SEM_2500_ATT)
             Ecrire("Atterrissage piste ",AtisCourant.piste_legers)
             V(SEM_2500_ATT)
-        SINON //gros porteur
-            Ecrire("Demandons atterrissage sur piste ",AtisCourant.piste_leger)
-            P(SEM_4000_ATT)
-            Ecrire("Atterrissage piste ",AtisCourant.piste_legers)
-            V(SEM_4000_ATT)
-            SI val(SEM_4000_ATT) == 1 //plus personne ne veut atterrir
-                V(SEM_4000_DEC) //on autorise les avions a decoller
+	    SI val(SEM_2500_ATT) == 1 //plus personne ne veut atterrir
+                V(SEM_2500_DEC) //on autorise les avions a decoller
             FIN_SI
+        SINON //gros porteur
+            //meme chose avec la piste 4000
         FIN_SI
 FIN_CP

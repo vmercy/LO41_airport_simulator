@@ -119,6 +119,7 @@ void planeProcess()
         //fflush(stdout);
         V(SEM_PRINTF);
 
+        ColorVerbose(TWR,True,True,"%s-%s bonjour");
         break;
 
         //afficher circuit de depart complet
