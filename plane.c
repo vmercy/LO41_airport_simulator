@@ -53,7 +53,9 @@ void planeProcess()
         Plane.cruising_speed = 450 + rand() % 51;
         break;
     }
-    Plane.extern_airport_type = rand() % 2; //50 percent chance that Plane is travelling from/to BSL airport
+    Plane.extern_airport_type = TO;
+    //if(getVal(SEM_PARKING)>0)
+        Plane.extern_airport_type = rand() % 2; //If parking is not full, then we can generate outgoing flights
     switch (randomizeProb(DOMESTIC_PROBABILITY))
     {
     case DOMESTIC: //France to France flight
@@ -119,7 +121,14 @@ void planeProcess()
         //fflush(stdout);
         V(SEM_PRINTF);
 
-        ColorVerbose(TWR,True,True,"%s-%s bonjour");
+        //P(SEM_2500_DEC);
+        ColorVerbose(TWR,True,True,"\
+        BSL Tour - %s-%s bonjour \n\
+        Autorise decollage piste %s\n\
+        ",Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix,runways[Plane.UsedRunway]);
+
+
+
         break;
 
         //afficher circuit de depart complet

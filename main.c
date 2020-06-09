@@ -28,7 +28,7 @@ void setup(int argc, char *argv[]){
     initializeData();
     srand(time(0));
     
-    if (argc != 2)
+    if (argc != 3)
     {
         printf("\nParametres NB_AVIONS et CAPACITE_PARKING initialises a 20 et 10\n");
         nbAircrafts = DEFAULT_NB_AVION;

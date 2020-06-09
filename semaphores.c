@@ -36,6 +36,9 @@ int getVal(int semnum){ //lit la valeur du semaphore
 
 void initializeSemaphores(){
     semctl(semid,SEM_PRINTF,SETVAL,1);
-	semctl(semid,SEM_2500,SETVAL,1);
-	semctl(semid,SEM_4000,SETVAL,1);
+	semctl(semid,SEM_2500_ATT,SETVAL,1);
+	semctl(semid,SEM_4000_ATT,SETVAL,1);
+	semctl(semid,SEM_2500_DEC,SETVAL,0);
+	semctl(semid,SEM_4000_DEC,SETVAL,0);
+	semctl(semid,SEM_PARKING,SETVAL,parkingCapacity);
 }
