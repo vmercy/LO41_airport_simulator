@@ -12,7 +12,7 @@ int ReadAirports()
 
     if (!FichierEurope)
     {
-        ColorVerbose(MAIN, False, True, "Erreur ouverture fichier %s\n",EURFILE);
+        ColorVerbose(MAIN, False, True, False, "Erreur ouverture fichier %s\n",EURFILE);
         return 0;
     }
 
@@ -71,7 +71,7 @@ int ReadAirports()
 
     if (!FichierFrance)
     {
-        ColorVerbose(MAIN, False, True, "Erreur ouverture fichier %s\n",FRAFILE);
+        ColorVerbose(MAIN, False, True, False, "Erreur ouverture fichier %s\n",FRAFILE);
         return 0;
     }
 
@@ -125,7 +125,7 @@ int ReadAirports()
 
 void PrintAeroportData(airport Aeroport)
 {
-    ColorVerbose(MAIN,False,False,"Nom : %s | IATA : %s | OACI : %s%s | Itineraire preferentiel : ", Aeroport.fullname, Aeroport.iata, Aeroport.host_country.airport_prefix, Aeroport.oaci_suffix);
+    ColorVerbose(MAIN,False,False,False,"Nom : %s | IATA : %s | OACI : %s%s | Itineraire preferentiel : ", Aeroport.fullname, Aeroport.iata, Aeroport.host_country.airport_prefix, Aeroport.oaci_suffix);
     PrintRoute(Aeroport.prefered_route);
-    ColorVerbose(MAIN,False,False," | Distance BSL : %i\n",Aeroport.distance);
+    ColorVerbose(MAIN,False,False,False," | Distance BSL : %i\n",Aeroport.distance);
 }

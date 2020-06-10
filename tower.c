@@ -5,7 +5,7 @@
 
 void tower(){
     if(!fork()){
-        ColorVerbose(TWR,True,True,"BALE TOUR bonjour");
+        ColorVerbose(TWR,True,True,False,"BALE TOUR bonjour");
         exit(0);
     }
 }

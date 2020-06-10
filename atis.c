@@ -26,7 +26,7 @@ void generateAtis(){
 }
 
 void printAtis(){
-    ColorVerbose(ATIS,True,True,
+    ColorVerbose(ATIS,True,True, True,
     "Ici Bale-Mulhouse, information %s enregistree a %s:%s UTC \n\
     Piste en service legers et moyens porteurs : %s\n\
     Piste en service gros porteurs : %s\n\

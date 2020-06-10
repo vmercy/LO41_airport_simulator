@@ -1,0 +1,75 @@
+Variables en mémoire partagée :
+ENTIER NbParking //nombre d'avions au parking
+ENTIER NbAttenteDecollage
+ENTIER NbAttenteAtterrissage
+
+MUTEX MutexNbParking initialisé à 1
+MUTEX MutexNbAttenteDecollage initialisé à 1
+MUTEX MutexNbAttenteAtterrissage initialisé à 1
+
+SEM Piste initialisé à 1
+SEM AutoDecollage initialisé à 0
+SEM Parking initialisé à CAPACITE_PARKING
+
+//On ne peut generer un avion sortant que si NbParking > 0
+
+Avion entrant (décollage):
+
+P(MutexNbParking)
+SI NbParking = CAPACITE_PARKING ALORS
+    V(MutexNbParking)
+    //Perd du carburant puis fait des tours de piste ou se déroute
+SINON
+    V(MutexNbParking)
+FIN_SI
+P(Parking)
+P(MutexNbAttenteAtterrissage)
+NbAttenteAtterrissage++
+V(MutexNbAttenteAtterrissage)
+Si getValue (Piste)<= 0 ALORS //en C : sem_getvalue(sem_t * sem, int * value) )
+    //Piste occupee, attente liberation
+FIN_SI
+P(Piste)
+//Atterrit
+V(Piste)
+P(MutexNbAttenteAtterrissage)
+NbAttenteAtterrissage--
+SI NbAttenteAtterrissage = 0
+    V(MutexNbAttenteAtterrissage)
+    P(MutexNbAttenteDecollage)
+    SI NbAttenteDecollage>0 ALORS
+        V(AutoDecollage)
+    FIN_SI
+    V(MutexNbAttenteDecollage)
+SINON
+    V(MutexNbAttenteAtterrissage)
+FIN_SI
+NbParking++
+
+Avion sortant (atterrissage)::
+P(MutexNbAttenteDecollage)
+NbAttenteDecollage++
+V(MutexNbAttenteDecollage)
+SI NbAttenteAtterrissage>0
+    P(AutoDecollage)
+FIN_SI
+P(Piste)
+//décolle
+V(Piste)
+V(Parking)
+P(MutexNbParking)
+NbParking--
+V(MutexNbParking)
+P(MutexNbAttenteDecollage)
+NbAttenteDecollage--
+V(MutexNbAttenteDecollage)
+P(MutexNbAttenteAtterrissage)
+SI NbAttenteAtterrissage=0 ALORS
+    V(MutexNbAttenteAtterrissage)
+    P(MutexNbAttenteDecollage)
+    SI(NbAttenteDecollage) > 0 ALORS
+        V(AutoDecollage)
+    FIN_SI
+SINON
+    V(MutexNbAttenteAtterrissage)
+FIN_SI

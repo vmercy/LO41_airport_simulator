@@ -71,7 +71,7 @@ void PrintRoute(route Route)
     int nb_pts = CountReportingPoints(Route);
     for (int i = 0; i < nb_pts; i++)
     {
-        ColorVerbose(MAIN, False, False, "%s", BSL_reporting_points[Route.point_indexes[i]].id);
+        ColorVerbose(MAIN, False, False, False, "%s", BSL_reporting_points[Route.point_indexes[i]].id);
         if (i != (nb_pts - 1))
             printf("-");
     }

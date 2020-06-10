@@ -1,10 +1,9 @@
 #include <time.h>
 #include <sys/types.h>
+#include <semaphore.h>
 
 /* Semaphores */
-#define IFLAGS (SEMPERM | IPC_CREAT)
-#define SKEY (key_t) IPC_PRIVATE
-#define SEMPERM 0666 // Permission
+#define PERM 0644
 #define NB_SEMAPHORES 6
 
 #define SEM_PRINTF 0 //semaphore utilise pour rendre atomique la fonction printf
@@ -25,7 +24,7 @@
 #define NB_AIRPORTS_EUROPE 10 //BSL excluded
 /* End of parameters */
 
-#define DEFAULT_NB_AVION 5         //default number of aircrafts to generate
+#define DEFAULT_NB_AVION 5         //default number of aircrafts to generate //TODO: set to 20
 #define DEFAULT_CAPACITE_PARKING 10 //default max number of aircrafts in BSL parking
 
 #define OTAN_SPELL_MAXLENGTH 9
@@ -177,7 +176,7 @@ report_pt out; //used to localize aircrafts that are outside BSL region
 route BSL_pref_route[3];
 
 /* Global functions */
-void ColorVerbose(int role, bool header, bool jump, char *fmt, ...);
+void ColorVerbose(int role, bool header, bool jump, bool protected, char *fmt, ...);
 void printAtis();
 void generateAtis();
 void initializeData();
@@ -191,7 +190,7 @@ route reverseRoute(route Route);
 void initializeSemaphores();
 void V(int semnum);
 void P(int semnum);
-int initsem(key_t semkey);
+int initsem(key_t semkey, int role);
 void initializeSemaphores();
 int getVal(int semnum);
 int InitializeSignal();
@@ -205,3 +204,14 @@ pid_t main_pid;
 int semid, shmid;
 int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;
+sem_t *print;
+sem_t *MutexNbParking;
+sem_t *MutexNbAttenteDecollage;
+sem_t *MutexNbAttenteAtterrissage;
+sem_t *Piste;
+sem_t *AutoDecollage;
+sem_t *Parking;
+
+int *NbParking;
+int *NbAttenteDecollage;
+int *NbAttenteAtterrissage;

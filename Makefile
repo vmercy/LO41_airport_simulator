@@ -18,7 +18,7 @@ run :
 	./Simul_BSL
 
 build: $(OBJ)
-	$(COMPILO) -o Simul_BSL $(OBJ)
+	$(COMPILO) -o Simul_BSL $(OBJ) -lpthread -lrt
 
 test:
 	rm -f test

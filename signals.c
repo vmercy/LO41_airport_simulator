@@ -9,13 +9,15 @@
 //sigterm and sigint handlers to delete IPC with semctl( semid, 1, IPC_RMID );
 
 void CleanIPCs(){
-    semctl(semid, 1, IPC_RMID);
-    shmctl(shmid, IPC_RMID, NULL);
+    shmdt(NbParking);
+    shmdt(NbAttenteDecollage);
+    shmdt(NbAttenteAtterrissage);
+    shmctl(shmid, IPC_RMID, 0);
 }
 
 int InitializeSignal(){
     if (signal(SIGINT, CleanIPCs) == SIG_ERR) {
-        ColorVerbose(MAIN,True,False,"Erreur lors de l'affectation du signal SIGINT\n", stderr);
+        ColorVerbose(MAIN,True,False,False,"Erreur lors de l'affectation du signal SIGINT\n", stderr);
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

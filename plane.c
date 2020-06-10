@@ -54,8 +54,10 @@ void planeProcess()
         break;
     }
     Plane.extern_airport_type = TO;
-    //if(getVal(SEM_PARKING)>0)
-        Plane.extern_airport_type = rand() % 2; //If parking is not full, then we can generate outgoing flights
+    sem_wait(MutexNbParking);
+    //if (*NbParking > 0)
+        Plane.extern_airport_type = rand() % 2; //If parking is not empty, then we can generate outgoing flights
+    sem_post(MutexNbParking);
     switch (randomizeProb(DOMESTIC_PROBABILITY))
     {
     case DOMESTIC: //France to France flight
@@ -88,26 +90,27 @@ void planeProcess()
     Plane.ETA.tm_hour = 0;
     Plane.ETA.tm_min = 0;
     Plane.state = NORMAL;
-    P(SEM_PRINTF);
-    ColorVerbose(PLANE, True, True, "Avion initialise | PID : %i | Immatriculation : %s-%s\n", Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix);
-    //fflush(stdout);
-    V(SEM_PRINTF);
+    //P(SEM_PRINTF);
+    sem_wait(print);
+    ColorVerbose(PLANE, True, True, False, "Avion initialise | PID : %i | Immatriculation : %s-%s\n", Plane.pid, Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+    sem_post(print);
+    //V(SEM_PRINTF);
+    switch (Plane.aircraft_type == LIGHT || Plane.aircraft_type == MEDIUM)
+    {
+    case 1:
+        Plane.UsedRunway = CurrentATIS.runway_LM;
+        break;
+
+    default:
+        Plane.UsedRunway = CurrentATIS.runway_big;
+        break;
+    }
     switch (Plane.extern_airport_type)
     {
     case FROM:
     {
-        switch (Plane.aircraft_type==LIGHT||Plane.aircraft_type==MEDIUM)
-        {
-        case 1:
-            Plane.UsedRunway =  CurrentATIS.runway_LM;
-            break;
-        
-        default:
-            Plane.UsedRunway =  CurrentATIS.runway_big;
-            break;
-        }
-        P(SEM_PRINTF);
-        ColorVerbose(PLANE, True, True," \
+        sem_wait(print);
+        ColorVerbose(PLANE, True, True, False, " \
             PID %i\n\
             Bale-Mulhouse de %s-%s bonjour \n\
             Avion %s \n\
@@ -117,37 +120,61 @@ void planeProcess()
             Transpondeur %i \n\
             Actuellement au parking \n\
             Demandons roulage pour piste %s\n\
-            ",Plane.pid,Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.squawk,runways[Plane.UsedRunway]);
+            ",
+                     Plane.pid, Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed, Plane.squawk, runways[Plane.UsedRunway]);
         //fflush(stdout);
-        V(SEM_PRINTF);
 
         //P(SEM_2500_DEC);
-        ColorVerbose(TWR,True,True,"\
+        ColorVerbose(TWR, True, True, False, "\
         BSL Tour - %s-%s bonjour \n\
         Autorise decollage piste %s\n\
-        ",Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix,runways[Plane.UsedRunway]);
+        ",
+                     Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+
+        //afficher circuit de depart complet
+        report_pt lastPos = ground;
+        for (int i = 0; i < CountReportingPoints(Plane.dep_arr.prefered_route); i++)
+        {
+            lastPos = ReportPointAtIndex(i, Plane.dep_arr.prefered_route);
+            ColorVerbose(PLANE, False, True, False, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
+            //fflush(stdout);
+            sleep(1); //sleep depending of cruising speed
+        }
+        Plane.last_pos = out;
+        sem_post(print);
+
+
+/* 
+        sem_wait(MutexNbParking);
+        if(*NbParking==parkingCapacity){
+            sem_post(MutexNbParking);
+
+        }
+
+
+ */
+
+
 
 
 
         break;
-
-        //afficher circuit de depart complet
     }
     case TO:
     {
         report_pt lastPos = out;
         route myRoute = reverseRoute(Plane.dep_arr.prefered_route);
 
-        P(SEM_PRINTF);
-        for(int i = 0; i<CountReportingPoints(myRoute);i++){
-            lastPos = ReportPointAtIndex(i,myRoute);
-            ColorVerbose(PLANE,False,True,"%s-%s : Je passe le point %s \n",Plane.
-            dep_arr.host_country.registration_prefix,Plane.registration_suffix,lastPos.id);
+        sem_wait(print);
+        for (int i = 0; i < CountReportingPoints(myRoute); i++)
+        {
+            lastPos = ReportPointAtIndex(i, myRoute);
+            ColorVerbose(PLANE, False, True, False, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
             //fflush(stdout);
             sleep(1); //sleep depending of cruising speed
         }
         Plane.last_pos = lastPos;
-        ColorVerbose(PLANE, True, True," \
+        ColorVerbose(PLANE, True, True, False, " \
             Bale-Mulhouse de %s-%s bonjour \n\
             Avion %s \n\
             En provenance de %s \n\
@@ -156,9 +183,18 @@ void planeProcess()
             Vitesse de croisiere %i \n\
             Passant le point %s \n\
             Demandons integration pour atterrissage complet\n\
-            ",Plane.dep_arr.host_country.registration_prefix,Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed,Plane.last_pos.id);
+            ",
+                     Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed, Plane.last_pos.id);
         //fflush(stdout);
-        V(SEM_PRINTF);
+        sem_post(print);
+
+
+
+
+
+
+
+
         break;
     }
     }
