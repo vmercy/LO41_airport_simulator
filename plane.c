@@ -55,8 +55,10 @@ void planeProcess()
     }
     Plane.extern_airport_type = TO;
     sem_wait(MutexNbParking);
-    //if (*NbParking > 0)
+    ColorVerbose(TWR,False,True,True,"NbParking = %i\n",*NbParking);
+    if (*NbParking > 0)
         Plane.extern_airport_type = rand() % 2; //If parking is not empty, then we can generate outgoing flights
+    *NbParking++;
     sem_post(MutexNbParking);
     switch (randomizeProb(DOMESTIC_PROBABILITY))
     {
@@ -138,26 +140,13 @@ void planeProcess()
             lastPos = ReportPointAtIndex(i, Plane.dep_arr.prefered_route);
             ColorVerbose(PLANE, False, True, False, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
             //fflush(stdout);
-            sleep(1); //sleep depending of cruising speed
+            //sleep(1); //TODO: sleep duration depending of cruising speed
         }
         Plane.last_pos = out;
         sem_post(print);
-
-
-/* 
-        sem_wait(MutexNbParking);
-        if(*NbParking==parkingCapacity){
-            sem_post(MutexNbParking);
-
-        }
-
-
- */
-
-
-
-
-
+        //DEBUT ALGORITHME
+        
+        //FIN ALGORITHME
         break;
     }
     case TO:
@@ -171,7 +160,7 @@ void planeProcess()
             lastPos = ReportPointAtIndex(i, myRoute);
             ColorVerbose(PLANE, False, True, False, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
             //fflush(stdout);
-            sleep(1); //sleep depending of cruising speed
+            //sleep(1); //TODO: sleep duration depending of cruising speed
         }
         Plane.last_pos = lastPos;
         ColorVerbose(PLANE, True, True, False, " \
@@ -188,13 +177,47 @@ void planeProcess()
         //fflush(stdout);
         sem_post(print);
 
-
-
-
-
-
-
-
+        //DEBUT ALGORITHME
+        /* sem_wait(MutexNbParking);
+        if(*NbParking==parkingCapacity){
+            ColorVerbose(PLANE,False,True,True,"%s-%s : Parking plein, je me deroute \n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+        }
+        sem_post(MutexNbParking); */
+        int ValSemParking;
+        sem_getvalue(Parking,&ValSemParking);
+        if(ValSemParking<=0)
+            ColorVerbose(PLANE,True,True,True,"%s-%s : Parking plein, j'attends...\n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+        sem_wait(Parking);
+        sem_wait(MutexNbAttenteAtterrissage);
+        *NbAttenteAtterrissage--;
+        sem_post(MutexNbAttenteAtterrissage);
+        int PisteOccupee;
+        sem_getvalue(Piste,&PisteOccupee);
+        if(PisteOccupee<=0){
+            ColorVerbose(PLANE,False,True,True,"%s-%s : La piste est occupee, j attends sa liberation...",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+        }
+        sem_wait(Piste);
+        ColorVerbose(PLANE,False,True,True,"%s-%s : J'atterris \n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+        sem_post(Piste);
+        sem_wait(MutexNbAttenteAtterrissage);
+        *NbAttenteAtterrissage--;
+        if(*NbAttenteAtterrissage==0){
+            sem_post(MutexNbAttenteAtterrissage);
+            sem_wait(MutexNbAttenteDecollage);
+            if(*NbAttenteDecollage>0)
+                sem_post(AutoDecollage);
+            sem_post(MutexNbAttenteDecollage);
+        }
+        else
+        {
+            sem_post(MutexNbAttenteAtterrissage);
+        }
+        sem_wait(MutexNbParking);
+        *NbParking++;
+        sem_post(MutexNbParking);
+        //FIN ALGORITHME
+        sem_getvalue(Parking,&ValSemParking);
+        ColorVerbose(MAIN,True,True,True,"Valeur semaphore parking : %i | Capacite parking : %i\n",ValSemParking,parkingCapacity);
         break;
     }
     }
@@ -203,17 +226,23 @@ void planeProcess()
 int createPlanesProcesses()
 {
     int i;
+    pid_t pid;
     for (i = 0; i < nbAircrafts; i++)
     {
-        if (getpid() == main_pid)
-        {
-            if (!fork())
-            {
-                planeProcess();
-                exit(0);
-            }
+        pid = fork();
+        if(pid<0){
+            ColorVerbose(MAIN,True,True,True,"Erreur de fork\n");
+            exit(EXIT_FAILURE);
         }
+        else if(pid==0)
+            break;
     }
+    if(pid==0){
+        sleep(rand()%3); //define MAX_WAIT
+        planeProcess();
+        exit(EXIT_SUCCESS);
+    }
+    else
     return i + 1;
 }
 

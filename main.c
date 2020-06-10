@@ -14,6 +14,20 @@
 #include "header.h"
 
 void setup(int argc, char *argv[]){
+    srand(time(0));
+    
+    if (argc != 3)
+    {
+        printf("\nParametres NB_AVIONS et CAPACITE_PARKING initialises a 20 et 10\n");
+        nbAircrafts = DEFAULT_NB_AVION;
+        parkingCapacity = DEFAULT_CAPACITE_PARKING;
+    }
+    else
+    {
+        nbAircrafts = atoi(argv[1]);
+        parkingCapacity = atoi(argv[2]);
+    }
+
     main_pid = getpid();
 
     printf("\nMain PID : %i",main_pid);
@@ -23,6 +37,8 @@ void setup(int argc, char *argv[]){
         printf("\nErreur lors de l'initialisation des semaphores");
         exit(EXIT_FAILURE);
     } */
+
+    initializeData();
     
     key_t shmkey;
     shmkey = ftok (argv[0], 5);
@@ -46,25 +62,15 @@ void setup(int argc, char *argv[]){
 
     Piste = sem_open("SemPiste",O_CREAT | O_EXCL,PERM,1);
     AutoDecollage = sem_open("SemAutoDecollage",O_CREAT | O_EXCL,PERM,0);
-    Parking = sem_open("SemParking",O_CREAT | O_EXCL,PERM,10);
+    Parking = sem_open("SemParking",O_CREAT | O_EXCL,PERM,parkingCapacity); //TODO: set value to parking capacity
+
+
 
     if(InitializeSignal()==EXIT_FAILURE){
         exit(EXIT_FAILURE);
     }
-    initializeData();
-    srand(time(0));
     
-    if (argc != 3)
-    {
-        printf("\nParametres NB_AVIONS et CAPACITE_PARKING initialises a 20 et 10\n");
-        nbAircrafts = DEFAULT_NB_AVION;
-        parkingCapacity = DEFAULT_CAPACITE_PARKING;
-    }
-    else
-    {
-        nbAircrafts = atoi(argv[1]);
-        parkingCapacity = atoi(argv[2]);
-    }
+    
     generateAtis();
     printAtis();
 
@@ -110,6 +116,10 @@ int main(int argc, char *argv[])
 
     sem_unlink("SemParking");
     sem_close(Parking);
+
+    shmdt(NbParking);
+    shmdt(NbAttenteAtterrissage);
+    shmdt(NbAttenteDecollage);
 
     CleanIPCs();
 

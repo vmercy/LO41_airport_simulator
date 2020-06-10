@@ -25,7 +25,7 @@
 /* End of parameters */
 
 #define DEFAULT_NB_AVION 5         //default number of aircrafts to generate //TODO: set to 20
-#define DEFAULT_CAPACITE_PARKING 10 //default max number of aircrafts in BSL parking
+#define DEFAULT_CAPACITE_PARKING 3 //default max number of aircrafts in BSL parking
 
 #define OTAN_SPELL_MAXLENGTH 9
 #define REGISTRATION_SUFFIX_MAXLENGTH 4 //max length of an aircraft registration suffix (F-___)
