@@ -15,31 +15,7 @@
 
 void setup(int argc, char *argv[]){
     srand(time(0));
-    
-    if (argc != 3)
-    {
-        printf("\nParametres NB_AVIONS et CAPACITE_PARKING initialises a 20 et 10\n");
-        nbAircrafts = DEFAULT_NB_AVION;
-        parkingCapacity = DEFAULT_CAPACITE_PARKING;
-    }
-    else
-    {
-        nbAircrafts = atoi(argv[1]);
-        parkingCapacity = atoi(argv[2]);
-    }
 
-    main_pid = getpid();
-
-    printf("\nMain PID : %i",main_pid);
-
-    /* if ((semid = initsem(SKEY,MAIN)) < 0) //Création d'un ensemble de sémaphore
-    {
-        printf("\nErreur lors de l'initialisation des semaphores");
-        exit(EXIT_FAILURE);
-    } */
-
-    initializeData();
-    
     key_t shmkey;
     shmkey = ftok (argv[0], 5);
     shmid = shmget (shmkey, 3*sizeof (int), 0644 | IPC_CREAT);
@@ -56,14 +32,42 @@ void setup(int argc, char *argv[]){
     *NbAttenteAtterrissage = 0;
 
     print = sem_open("printfSem",O_CREAT | O_EXCL,PERM,1);
+
+    initializeData();
+    
+    if (argc != 3)
+    {
+        nbAircrafts = DEFAULT_NB_AVION;
+        parkingCapacity = DEFAULT_CAPACITE_PARKING;
+        ColorVerbose(MAIN,False,True,False,"\nInitialisation faite avec les valeurs par defaut : NB_AVIONS = %i et CAPACITE_PARKING = %i \n",DEFAULT_NB_AVION,DEFAULT_CAPACITE_PARKING);
+    }
+    else
+    {
+        nbAircrafts = atoi(argv[1]);
+        parkingCapacity = atoi(argv[2]);
+        ColorVerbose(MAIN,False,True,False,"\nInitialisation faite avec les valeurs personnalisees : NB_AVIONS = %i et CAPACITE_PARKING = %i \n",nbAircrafts,parkingCapacity);
+    }
+
     MutexNbParking = sem_open("MutexParking",O_CREAT | O_EXCL,PERM,1);
     MutexNbAttenteDecollage = sem_open("MutexNbAttenteDecollage",O_CREAT | O_EXCL,PERM,1);
     MutexNbAttenteAtterrissage = sem_open("MutexNbAttenteAtterrissage",O_CREAT | O_EXCL,PERM,1);
 
     Piste = sem_open("SemPiste",O_CREAT | O_EXCL,PERM,1);
     AutoDecollage = sem_open("SemAutoDecollage",O_CREAT | O_EXCL,PERM,0);
-    Parking = sem_open("SemParking",O_CREAT | O_EXCL,PERM,parkingCapacity); //TODO: set value to parking capacity
+    Parking = sem_open("SemParking",O_CREAT | O_EXCL,PERM,parkingCapacity);
 
+    main_pid = getpid();
+
+    printf("\nMain PID : %i",main_pid);
+
+    /* if ((semid = initsem(SKEY,MAIN)) < 0) //Création d'un ensemble de sémaphore
+    {
+        printf("\nErreur lors de l'initialisation des semaphores");
+        exit(EXIT_FAILURE);
+    } */
+
+    
+    
 
 
     if(InitializeSignal()==EXIT_FAILURE){

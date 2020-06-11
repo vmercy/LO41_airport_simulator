@@ -14,6 +14,8 @@
 #define SEM_PARKING 5 //semaphore utilise pour gerer le parking de BSL
 
 /* Parameters */
+#define MAX_WAIT 3 //seconds
+
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
 

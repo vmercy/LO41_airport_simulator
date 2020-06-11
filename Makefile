@@ -1,4 +1,6 @@
 FLAGS = -Wall
+LINKFLAGS = -lpthread -lrt
+
 COMPILO=gcc
 
 OBJ = 	data.o 		\
@@ -18,12 +20,14 @@ run :
 	./Simul_BSL
 
 build: $(OBJ)
-	$(COMPILO) -o Simul_BSL $(OBJ) -lpthread -lrt
+	$(COMPILO) -o Simul_BSL $(OBJ) $(LINKFLAGS)
 
-test:
-	rm -f test
-	$(COMPILO) -o test test.c $(FLAGS)
+test: clear_test
+	$(COMPILO) -o test test.c $(FLAGS) $(LINKFLAGS)
 	./test
+
+clear_test:
+	rm test
 
 clean:
 	rm -f *.o core
