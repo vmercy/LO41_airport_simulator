@@ -30,15 +30,10 @@ void ColorVerbose(int role, bool header, bool jump, bool protected, char *fmt, .
         if (header)
             printf("*** ATIS : *******\n");
         break;
-    case GND:
+    case SUCCESS:
         printf("\033[92m"); //green
         if (header)
-            printf("*** GND : *******\n");
-        break;
-    case APP:
-        printf("\033[33m"); //jaune
-        if (header)
-            printf("*** APP : *******\n");
+            printf("*** AVION : *******\n");
         break;
     case TWR:
         printf("\033[31m"); //rouge

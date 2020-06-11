@@ -9,9 +9,7 @@ OBJ = 	data.o 		\
 		read_airports.o \
 		plane.o		\
 		route.o	\
-		semaphores.o \
 		signals.o \
-		tower.o \
 		main.o
 
 all : build run

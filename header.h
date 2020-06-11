@@ -14,7 +14,7 @@
 #define SEM_PARKING 5 //semaphore utilise pour gerer le parking de BSL
 
 /* Parameters */
-#define MAX_WAIT 3 //seconds
+#define MAX_WAIT 15 //seconds
 
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
@@ -47,9 +47,8 @@
 #define MAIN 0  //black
 #define PLANE 1 //blue
 #define ATIS 2  //magenta
-#define GND 3   //green
-#define APP 4   //yellow
-#define TWR 5   //red
+#define SUCCESS 3   //green
+#define TWR 4   //red
 
 /* BSL runways */
 #define RWAY_33L 0

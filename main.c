@@ -66,9 +66,6 @@ void setup(int argc, char *argv[]){
         exit(EXIT_FAILURE);
     } */
 
-    
-    
-
 
     if(InitializeSignal()==EXIT_FAILURE){
         exit(EXIT_FAILURE);
@@ -99,31 +96,6 @@ int main(int argc, char *argv[])
     for(int i =0; i<nbAircrafts;i++){
         wait(NULL);
     }
-
-    sem_unlink("printfSem");
-    sem_close(print);
-
-    sem_unlink("MutexParking");
-    sem_close(MutexNbParking);
-
-    sem_unlink("MutexNbAttenteDecollage");
-    sem_close(MutexNbAttenteDecollage);
-
-    sem_unlink("MutexNbAttenteAtterrissage");
-    sem_close(MutexNbAttenteAtterrissage);
-
-    sem_unlink("SemPiste");
-    sem_close(Piste);
-
-    sem_unlink("SemAutoDecollage");
-    sem_close(AutoDecollage);
-
-    sem_unlink("SemParking");
-    sem_close(Parking);
-
-    shmdt(NbParking);
-    shmdt(NbAttenteAtterrissage);
-    shmdt(NbAttenteDecollage);
 
     CleanIPCs();
 
