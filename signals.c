@@ -15,23 +15,37 @@ void CleanIPCs(){
     sem_unlink("MutexParking");
     sem_close(MutexNbParking);
 
-    sem_unlink("MutexNbAttenteDecollage");
-    sem_close(MutexNbAttenteDecollage);
+    sem_unlink("MutexNbAttenteDecollage2500");
+    sem_close(MutexNbAttenteDecollage2500);
 
-    sem_unlink("MutexNbAttenteAtterrissage");
-    sem_close(MutexNbAttenteAtterrissage);
+    sem_unlink("MutexNbAttenteAtterrissage2500");
+    sem_close(MutexNbAttenteAtterrissage2500);
 
-    sem_unlink("SemPiste");
-    sem_close(Piste);
+    sem_unlink("SemPiste2500");
+    sem_close(Piste2500);
 
-    sem_unlink("SemAutoDecollage");
-    sem_close(AutoDecollage);
+    sem_unlink("SemAutoDecollage2500");
+    sem_close(AutoDecollage2500);
+
+    sem_unlink("MutexNbAttenteDecollage4000");
+    sem_close(MutexNbAttenteDecollage4000);
+
+    sem_unlink("MutexNbAttenteAtterrissage4000");
+    sem_close(MutexNbAttenteAtterrissage4000);
+
+    sem_unlink("SemPiste4000");
+    sem_close(Piste4000);
+
+    sem_unlink("SemAutoDecollage4000");
+    sem_close(AutoDecollage4000);
 
     sem_unlink("SemParking");
     sem_close(Parking);
     shmdt(NbParking);
-    shmdt(NbAttenteDecollage);
-    shmdt(NbAttenteAtterrissage);
+    shmdt(NbAttenteDecollage2500);
+    shmdt(NbAttenteAtterrissage2500);
+    shmdt(NbAttenteDecollage4000);
+    shmdt(NbAttenteAtterrissage4000);
     shmctl(shmid, IPC_RMID, 0);
 }
 

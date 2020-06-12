@@ -17,18 +17,28 @@ void setup(int argc, char *argv[]){
 
     key_t shmkey;
     shmkey = ftok (argv[0], 5);
-    shmid = shmget (shmkey, 3*sizeof (int), 0644 | IPC_CREAT);
+    shmid = shmget (shmkey, NB_INT*sizeof (int), 0644 | IPC_CREAT);
     if (shmid < 0){                           /* shared memory error check */
         perror ("shmget\n");
         exit (EXIT_FAILURE);
     }
+
+    if(MIN_WAIT>MAX_WAIT){
+        printf("\nErreur : le temps d'attente minimum (MIN_WAIT=%i) est superieur au temps d'attente maximum (MAX_WAIT=%i)\n",MIN_WAIT,MAX_WAIT);
+        exit (EXIT_FAILURE);
+    }
+
     NbParking = (int *) shmat (shmid,NULL,0);
-    NbAttenteDecollage=NbParking+1;
-    NbAttenteAtterrissage=NbAttenteDecollage+1;
+    NbAttenteDecollage2500=NbParking+1;
+    NbAttenteAtterrissage2500=NbParking+2;
+    NbAttenteDecollage4000=NbParking+3;
+    NbAttenteAtterrissage4000=NbParking+4;
 
     *NbParking = 0;
-    *NbAttenteDecollage = 0;
-    *NbAttenteAtterrissage = 0;
+    *NbAttenteDecollage2500 = 0;
+    *NbAttenteAtterrissage2500 = 0;
+    *NbAttenteDecollage4000 = 0;
+    *NbAttenteAtterrissage4000 = 0;
 
     print = sem_open("printfSem",SEMFLAGS,PERM,1);
 
@@ -48,11 +58,17 @@ void setup(int argc, char *argv[]){
     }
 
     MutexNbParking = sem_open("MutexParking",SEMFLAGS,PERM,1);
-    MutexNbAttenteDecollage = sem_open("MutexNbAttenteDecollage",SEMFLAGS,PERM,1);
-    MutexNbAttenteAtterrissage = sem_open("MutexNbAttenteAtterrissage",SEMFLAGS,PERM,1);
+    MutexNbAttenteDecollage2500 = sem_open("MutexNbAttenteDecollage2500",SEMFLAGS,PERM,1);
+    MutexNbAttenteAtterrissage2500 = sem_open("MutexNbAttenteAtterrissage2500",SEMFLAGS,PERM,1);
+    MutexNbAttenteDecollage4000 = sem_open("MutexNbAttenteDecollage4000",SEMFLAGS,PERM,1);
+    MutexNbAttenteAtterrissage4000 = sem_open("MutexNbAttenteAtterrissage4000",SEMFLAGS,PERM,1);
 
-    Piste = sem_open("SemPiste",SEMFLAGS,PERM,1);
-    AutoDecollage = sem_open("SemAutoDecollage",SEMFLAGS,PERM,0);
+    Piste2500 = sem_open("SemPiste2500",SEMFLAGS,PERM,1);
+    Piste4000 = sem_open("SemPiste4000",SEMFLAGS,PERM,1);
+    AutoDecollage2500 = sem_open("SemAutoDecollage2500",SEMFLAGS,PERM,0);
+    AutoDecollage4000 = sem_open("SemAutoDecollage4000",SEMFLAGS,PERM,0);
+
+
     Parking = sem_open("SemParking",SEMFLAGS,PERM,parkingCapacity);
 
     main_pid = getpid();
@@ -85,9 +101,7 @@ int main(int argc, char *argv[])
 {
     setup(argc,argv);
 
-    for(int i =0; i<nbAircrafts;i++){
-        wait(NULL);
-    }
+    waitForPlanes();
 
     CleanIPCs();
 

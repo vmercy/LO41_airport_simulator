@@ -6,8 +6,12 @@
 #define PERM 0644
 #define SEMFLAGS (O_CREAT | O_EXCL)
 
+/* Shared memory */
+#define NB_INT 5
+
 /* Parameters */
-#define MAX_WAIT 15 //seconds
+#define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait WAIT_FIW before starting its activity.
+#define MAX_WAIT 25 //seconds. When a plane process is generated, it will randomly wait a certain amount of time before starting its activity, with a limit of MAX_WAIT.
 
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
@@ -44,10 +48,10 @@
 #define TWR 4   //red
 
 /* BSL runways */
-#define RWAY_33L 0
-#define RWAY_33R 1
-#define RWAY_15L 2
-#define RWAY_15R 3
+#define RWAY_33L 0 //length 2500
+#define RWAY_33R 1 //length 4000
+#define RWAY_15L 2 //length 4000
+#define RWAY_15R 3 //length 2500
 
 /* Magnetic orientation of parallel runways 33 */
 #define QFU 333
@@ -177,9 +181,9 @@ void initializeData();
 int ReadAirports();
 void PrintAeroportData(airport Aeroport);
 void PrintRoute(route Route);
-/* void PrintRouteRaw(route Route); */
 char* zfill(int length, int value);
 int createPlanesProcesses();
+void waitForPlanes();
 route reverseRoute(route Route);
 void initializeSemaphores();
 void V(int semnum);
@@ -200,12 +204,18 @@ int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;
 sem_t *print;
 sem_t *MutexNbParking;
-sem_t *MutexNbAttenteDecollage;
-sem_t *MutexNbAttenteAtterrissage;
-sem_t *Piste;
-sem_t *AutoDecollage;
+sem_t *MutexNbAttenteDecollage2500;
+sem_t *MutexNbAttenteAtterrissage2500;
+sem_t *MutexNbAttenteDecollage4000;
+sem_t *MutexNbAttenteAtterrissage4000;
+sem_t *Piste2500;
+sem_t *Piste4000;
+sem_t *AutoDecollage2500;
+sem_t *AutoDecollage4000;
 sem_t *Parking;
 
 int *NbParking;
-int *NbAttenteDecollage;
-int *NbAttenteAtterrissage;
+int *NbAttenteDecollage2500;
+int *NbAttenteAtterrissage2500;
+int *NbAttenteDecollage4000;
+int *NbAttenteAtterrissage4000;
