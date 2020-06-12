@@ -48,8 +48,7 @@ void planeProcess()
     aircraft Plane;
     Plane.pid = getpid();
     strcpy(Plane.registration_suffix, randomizeRegistrationSuffix());
-    //Plane.aircraft_type = rand() % 3; //TODO: reactive randomization
-    Plane.aircraft_type = LIGHT;
+    Plane.aircraft_type = rand() % 3;
     switch (Plane.aircraft_type)
     {
     case LIGHT:
@@ -127,7 +126,54 @@ void planeProcess()
         {
         case True: //long runway, length 4000m
         {
-
+sem_wait(MutexNbAttenteDecollage4000);
+            (*NbAttenteDecollage4000)++;
+            sem_post(MutexNbAttenteDecollage4000);
+            sem_wait(MutexNbAttenteAtterrissage4000);
+            if (*NbAttenteAtterrissage4000 > 0)
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+                ColorVerbose(TWR, True, True, True, "%s-%s : Autres appareils en cours d'atterrissage sur la piste %s, attendez avant decollage\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+                sem_wait(AutoDecollage4000);
+            }
+            else
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+            }
+            sem_wait(Piste4000);
+            sem_wait(print);
+            ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix,runways[Plane.UsedRunway]);
+            ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise decollage, je m'aligne et decolle piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix,runways[Plane.UsedRunway]);
+            sem_post(print);
+            sem_post(Piste4000);
+            ColorVerbose(SUCCESS, True, True, True, "%s-%s : Decollage effectue, piste %s liberee\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+            sem_post(Parking);
+            sem_wait(MutexNbParking);
+            (*NbParking)--;
+            ColorVerbose(MAIN, True, True, True, "Places de parking occupees : %i/%i\n", *NbParking, parkingCapacity);
+            sem_post(MutexNbParking);
+            sem_wait(MutexNbAttenteDecollage4000);
+            (*NbAttenteDecollage4000)--;
+            sem_post(MutexNbAttenteDecollage4000);
+            sem_wait(MutexNbAttenteAtterrissage4000);
+            if (*NbAttenteAtterrissage2500 == 0)
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+                sem_wait(MutexNbAttenteDecollage4000);
+                if (*NbAttenteDecollage4000 > 0)
+                {
+                    sem_post(MutexNbAttenteDecollage4000);
+                    sem_post(AutoDecollage4000);
+                }
+                else
+                {
+                    sem_post(MutexNbAttenteDecollage4000);
+                }
+            }
+            else
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+            }
             break;
         }
 
@@ -226,6 +272,53 @@ void planeProcess()
         {
         case True: //long runway, length 4000m
         {
+int ValSemParking;
+            sem_getvalue(Parking, &ValSemParking);
+            if (ValSemParking <= 0)
+            {
+                sem_wait(print);
+                ColorVerbose(TWR, True, True, False, "%s-%s : Parking plein, executez deroutement ou mettez-vous en attente\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                ColorVerbose(PLANE, True, True, False, "%s-%s : Parking plein, j'attends...\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                sem_post(print);
+            }
+            sem_wait(Parking);
+            sem_wait(MutexNbAttenteAtterrissage4000);
+            (*NbAttenteAtterrissage4000)++;
+            sem_post(MutexNbAttenteAtterrissage4000);
+            int PisteOccupee;
+            sem_getvalue(Piste4000, &PisteOccupee);
+            if (PisteOccupee <= 0)
+            {
+                sem_wait(print);
+                ColorVerbose(TWR, True, True, False, "%s-%s : Piste %s occupee, executez tour d'attente. Vous etes N°%i sur la sequence d'atterrissage.\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix,runways[Plane.UsedRunway],*NbAttenteAtterrissage2500);
+                ColorVerbose(PLANE, False, True, False, "%s-%s : La piste %s est occupee, j attends sa liberation...\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+                sem_post(print);
+            }
+            sem_wait(Piste4000);
+            sem_wait(print);
+            ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage immediat piste %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+            ColorVerbose(PLANE, False, True, False, "%s-%s : Autorise atterrissage piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+            sem_post(print);
+            sem_post(Piste4000);
+            ColorVerbose(SUCCESS, False, True, False, "%s-%s : Atterrissage effectue, piste %s degagee, je roule pour le parking... Aurevoir \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+            sem_wait(MutexNbAttenteAtterrissage4000);
+            (*NbAttenteAtterrissage4000)--;
+            if (*NbAttenteAtterrissage4000 == 0)
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+                sem_wait(MutexNbAttenteDecollage4000);
+                if (*NbAttenteDecollage4000 > 0)
+                    sem_post(AutoDecollage4000);
+                sem_post(MutexNbAttenteDecollage4000);
+            }
+            else
+            {
+                sem_post(MutexNbAttenteAtterrissage4000);
+            }
+            sem_wait(MutexNbParking);
+            (*NbParking)++;
+            ColorVerbose(MAIN, True, True, True, "Places de parking occupees : %i/%i\n", *NbParking, parkingCapacity);
+            sem_post(MutexNbParking);
 
             break;
         }
