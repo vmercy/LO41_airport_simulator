@@ -3,10 +3,10 @@
 <h2> Simulation d'un aéroport </h2>
 <h3> Valentin Mercy </h3></center>
 
-## Introduction <!-- omit in toc -->
+## Introduction
 Le projet proposé ici consiste à simuler le comportement d'avions de plusieurs catégories (légers, moyens porteurs et gros porteurs) évoluant autour d'un aéroport français contrôlé, à deux pistes, selon les règles de la circulation aérienne. Qu'ils soient au départ ou à l'arrivée de cet aéroport, il s'agit de veiller à ce que tous les aéronefs puissent, par le biais de communications avec la tour de contrôle de l'infrastructure aéroportuaire, bénéficier des services de contrôle et d'alerte leur permettant de partager les deux pistes bidirectionnelles à disposition selon leur gabarit, leur ordre de départ/arrivée et la direction du vent. Des cas de pannes doivent également être gérés : il s'agit là de promettre à un avion dans une situation de détresse (Mayday) d'être prioritaire quant à l'utilisation des pistes en service.  
 
-### Lancement du programme en ligne de commande ###
+## Lancement du programme en ligne de commande ##
 Le programme attend les paramètres suivants (dans l'ordre) à passer en argument sur la ligne de commande :
 * NB_AVIONS *20* : nombre de processus avion à lancer  
 * CAPACITE_PARKING *10* : capacité du parking de BSL (en nombre d'avions). Tant qu'il est plein, aucune clairance d'atterrissage ne pourra être donnée par le contrôleur.  
@@ -17,7 +17,7 @@ Pour lancer le programme avec les valeurs par défaut, il faudra donc utiliser l
 ./Simul_BSL 20 10
 ```
 
-### Ordre d'affichage des informations de suivi ###  
+## Ordre d'affichage des informations de suivi ##
 **Attention :** Lorsque le programme est exécuté, il affiche sur la sortie standard les différentes actions des avions et de la tour de contrôle. Ces affichages sont protégés par un Mutex pour ne pas être interrompus mutuellement. L'ordre d'affichage de ces actions ne correspond pas forcément à leur déroulé dans le temps (qui dépend d'un temps d'attente généré aléatoirement - l'attente se faisant juste après la création du processus) mais à l'ordonnancement des processus. Ainsi, il n'y a rien d'anormal à voir par exemple la tour écrire :
 ```
 *** TWR : *******

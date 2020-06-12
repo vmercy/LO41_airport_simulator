@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/types.h>
-#include <sys/msg.h>
 #include <sys/shm.h>
 #include <semaphore.h>
 #include <sys/wait.h>
@@ -31,7 +30,7 @@ void setup(int argc, char *argv[]){
     *NbAttenteDecollage = 0;
     *NbAttenteAtterrissage = 0;
 
-    print = sem_open("printfSem",O_CREAT | O_EXCL,PERM,1);
+    print = sem_open("printfSem",SEMFLAGS,PERM,1);
 
     initializeData();
     
@@ -48,24 +47,17 @@ void setup(int argc, char *argv[]){
         ColorVerbose(MAIN,False,True,False,"\nInitialisation faite avec les valeurs personnalisees : NB_AVIONS = %i et CAPACITE_PARKING = %i \n",nbAircrafts,parkingCapacity);
     }
 
-    MutexNbParking = sem_open("MutexParking",O_CREAT | O_EXCL,PERM,1);
-    MutexNbAttenteDecollage = sem_open("MutexNbAttenteDecollage",O_CREAT | O_EXCL,PERM,1);
-    MutexNbAttenteAtterrissage = sem_open("MutexNbAttenteAtterrissage",O_CREAT | O_EXCL,PERM,1);
+    MutexNbParking = sem_open("MutexParking",SEMFLAGS,PERM,1);
+    MutexNbAttenteDecollage = sem_open("MutexNbAttenteDecollage",SEMFLAGS,PERM,1);
+    MutexNbAttenteAtterrissage = sem_open("MutexNbAttenteAtterrissage",SEMFLAGS,PERM,1);
 
-    Piste = sem_open("SemPiste",O_CREAT | O_EXCL,PERM,1);
-    AutoDecollage = sem_open("SemAutoDecollage",O_CREAT | O_EXCL,PERM,0);
-    Parking = sem_open("SemParking",O_CREAT | O_EXCL,PERM,parkingCapacity);
+    Piste = sem_open("SemPiste",SEMFLAGS,PERM,1);
+    AutoDecollage = sem_open("SemAutoDecollage",SEMFLAGS,PERM,0);
+    Parking = sem_open("SemParking",SEMFLAGS,PERM,parkingCapacity);
 
     main_pid = getpid();
 
     printf("\nMain PID : %i",main_pid);
-
-    /* if ((semid = initsem(SKEY,MAIN)) < 0) //Création d'un ensemble de sémaphore
-    {
-        printf("\nErreur lors de l'initialisation des semaphores");
-        exit(EXIT_FAILURE);
-    } */
-
 
     if(InitializeSignal()==EXIT_FAILURE){
         exit(EXIT_FAILURE);

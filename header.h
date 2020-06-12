@@ -4,14 +4,7 @@
 
 /* Semaphores */
 #define PERM 0644
-#define NB_SEMAPHORES 6
-
-#define SEM_PRINTF 0 //semaphore utilise pour rendre atomique la fonction printf
-#define SEM_2500_DEC 1 //semaphore utilise pour proteger l acces a la piste de 2500m (33L-15R) en decollage
-#define SEM_2500_ATT 2 //semaphore utilise pour proteger l acces a la piste de 2500m (33L-15R) en decollage
-#define SEM_4000_DEC 3 //semaphore utilise pour proteger l acces a la piste de 4000m (33R-15L) en decollage
-#define SEM_4000_ATT 4 //semaphore utilise pour proteger l acces a la piste de 4000m (33R-15L) en decollage
-#define SEM_PARKING 5 //semaphore utilise pour gerer le parking de BSL
+#define SEMFLAGS (O_CREAT | O_EXCL)
 
 /* Parameters */
 #define MAX_WAIT 15 //seconds

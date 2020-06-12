@@ -165,17 +165,15 @@ void planeProcess()
             sem_post(MutexNbAttenteAtterrissage);
         }
         //FIN ALGORITHME
-        //sem_wait(print);
+
         report_pt lastPos = ground;
         for (int i = 0; i < CountReportingPoints(Plane.dep_arr.prefered_route); i++)
         {
             lastPos = ReportPointAtIndex(i, Plane.dep_arr.prefered_route);
             ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
-            //fflush(stdout);
-            sleep(1); //TODO: sleep duration depending oN cruising speed
+            sleep(1); //TODO: set sleep duration depending on cruising speed
         }
         Plane.last_pos = out;
-        //sem_post(print);
 
         break;
     }
@@ -184,12 +182,10 @@ void planeProcess()
         report_pt lastPos = out;
         route myRoute = reverseRoute(Plane.dep_arr.prefered_route);
 
-        //sem_wait(print);
         for (int i = 0; i < CountReportingPoints(myRoute); i++)
         {
             lastPos = ReportPointAtIndex(i, myRoute);
             ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, lastPos.id);
-            //fflush(stdout);
             sleep(1); //TODO: sleep duration depending on cruising speed
         }
         Plane.last_pos = lastPos;
@@ -204,7 +200,6 @@ void planeProcess()
             Demandons integration pour atterrissage complet\n\
             ",
                      Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed, Plane.last_pos.id);
-        //sem_post(print);
 
         //DEBUT ALGORITHME
         int ValSemParking;
