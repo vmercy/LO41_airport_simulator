@@ -13,6 +13,8 @@
 #define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait WAIT_FIW before starting its activity.
 #define MAX_WAIT 25 //seconds. When a plane process is generated, it will randomly wait a certain amount of time before starting its activity, with a limit of MAX_WAIT.
 
+#define EMERGENCY_LANDING_DURATION 30
+
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
 

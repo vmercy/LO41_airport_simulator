@@ -9,7 +9,7 @@
 int main()
 {
     pid_t target_pid = 0;
-    printf("\nEntrez PID console : ");
+    printf("\nEntrez Main PID : ");
     scanf("%i", &target_pid);
 
     if (kill(target_pid, SIGUSR1) != 0)

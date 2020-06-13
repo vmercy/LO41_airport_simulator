@@ -63,10 +63,11 @@ void emergencyLanding()
         (*NbEmergency4000)++;
         sem_wait(Piste4000);
         sem_wait(print);
-        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
-        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
-        ColorVerbose(SUCCESS, True, True, False, "%s-%s : Atterrissage piste %s termine - piste degagee", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
         sem_post(print);
+        sleep(EMERGENCY_LANDING_DURATION); //TODO: test with sleep if other planes respect the emergency situation
+        ColorVerbose(SUCCESS, True, True, True, "%s-%s : Atterrissage urgent piste %s termine - piste degagee\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
         sem_post(Piste4000);
         (*NbEmergency4000)--;
     }
@@ -75,10 +76,11 @@ void emergencyLanding()
         (*NbEmergency2500)++;
         sem_wait(Piste2500);
         sem_wait(print);
-        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
-        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
-        ColorVerbose(SUCCESS, True, True, False, "%s-%s : Atterrissage piste %s termine - piste degagee", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
         sem_post(print);
+        sleep(EMERGENCY_LANDING_DURATION); //TODO: test with sleep if other planes respect the emergency situation
+        ColorVerbose(SUCCESS, True, True, True, "%s-%s : Atterrissage urgent piste %s termine - piste degagee\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
         sem_post(Piste2500);
         (*NbEmergency2500)--;
     }
@@ -219,7 +221,10 @@ void planeProcess()
             {
                 sem_post(MutexNbAttenteAtterrissage4000);
             }
-            while(*NbEmergency4000>0); //active waiting
+            if(*NbEmergency4000>0){
+                ColorVerbose(TWR,True,True,True,"%s-%s : Atterrissage d'urgence en cours, attendez avant decollage\n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                while(*NbEmergency4000>0){}; //active waiting
+            }
             sem_wait(Piste4000);
             sem_wait(print);
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
@@ -274,7 +279,10 @@ void planeProcess()
             {
                 sem_post(MutexNbAttenteAtterrissage2500);
             }
-            while(*NbEmergency2500>0); //active waiting
+            if(*NbEmergency2500>0){
+                ColorVerbose(TWR,True,True,True,"%s-%s : Atterrissage d'urgence en cours, attendez avant decollage\n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                while(*NbEmergency2500>0){}; //active waiting
+            }
             sem_wait(Piste2500);
             sem_wait(print);
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
@@ -386,6 +394,10 @@ void planeProcess()
                 //TODO: decrease fuel quantity and if < threshold, trigger breakdown
                 sem_post(print);
             }
+            if(*NbEmergency4000>0){
+                ColorVerbose(TWR,True,True,True,"%s-%s : Atterrissage d'urgence en cours, attendez avant atterrissage\n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                while(*NbEmergency4000>0){}; //active waiting
+            }
             sem_wait(Piste4000);
             sem_wait(print);
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage immediat piste %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
@@ -441,6 +453,10 @@ void planeProcess()
                 ColorVerbose(PLANE, False, True, False, "%s-%s : La piste %s est occupee, j attends sa liberation...\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
                 //TODO: decrease fuel quantity and if < threshold, trigger breakdown
                 sem_post(print);
+            }
+            if(*NbEmergency2500>0){
+                ColorVerbose(TWR,True,True,True,"%s-%s : Atterrissage d'urgence en cours, attendez avant atterrissage\n",Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix);
+                while(*NbEmergency2500>0){}; //active waiting
             }
             sem_wait(Piste2500);
             sem_wait(print);

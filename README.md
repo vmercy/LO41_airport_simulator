@@ -42,7 +42,7 @@ Pour lancer le programme avec les valeurs par défaut, il faudra donc utiliser l
 
 <font color="#8AE234">PH-EZSZ : Je passe le point E (sens : entree)</font>
 
-Pour déclarer une panne, il est nécessaire de démarrer le programme Simul_BSL d'abord (```./Simul_BSL <NB_AVIONS> <CAPACITE_PARKING>```), de répondre "O" à la question "Souhaitez-vous utiliser la console de controle ?" puis de démarrer la console de controle (```make run_interface```).  
+Pour déclarer une panne, il est nécessaire de démarrer le programme Simul_BSL d'abord (```./Simul_BSL <NB_AVIONS> <CAPACITE_PARKING>```), de répondre "O" à la question "Souhaitez-vous utiliser la console de controle pour declarer des pannes ou regenerer l'ATIS ?" puis de démarrer la console de controle (```make run_interface```).  
 Reperez ensuite le PID de l'avion qui doit être la cible de la panne, puis saisissez-le dans l'interface de contrôle.
 
 
@@ -444,6 +444,202 @@ Places de parking occupees : 2/3
 <font color="#8AE234">PH-QVXY : Atterrissage effectue, piste 15R degagee, je roule pour le parking... Aurevoir </font>
 </pre>
 
-### <u>Jeu d'essai 4 :</u> Simulation d'une panne ###
+### <u>Jeu d'essai 4 :</u> Simulation d'une panne (deux pistes en services et utilisation de la console de controle) ###
 
-<!--TODO: inserer jeu d'essai -->
+#### Trace d'execution de Simul_BSL_interface ####
+```
+./Simul_BSL_interface
+
+Entrez Main PID : 17533
+
+Signal de synchronisation envoye
+
+Choisir commande :
+1 - Declarer une panne avant atterissage 
+2 - Changer l'ATIS
+3 - Fermer la console de controle
+Votre choix : 1
+
+Entrez le PID de l'avion à déclarer en panne : 17561
+
+Signal de panne envoye avec succes
+```
+
+#### Trace d'execution de Simul_BSL ####
+<pre>Souhaitez-vous utiliser la console de controle pour declarer des pannes ou regenerer l&apos;ATIS ? (O/n) : O
+
+Main PID : 17533
+Attente demarrage interface de controle ...
+
+Initialisation faite avec les valeurs par defaut : NB_AVIONS = 5 et CAPACITE_PARKING = 3 
+
+<font color="#75507B">*** ATIS : *******</font>
+<font color="#75507B">Ici Bale-Mulhouse, information ALPHA enregistree a 21:46 UTC </font>
+<font color="#75507B">    Piste en service legers et moyens porteurs : 15R</font>
+<font color="#75507B">    Piste en service gros porteurs : 15L</font>
+<font color="#75507B">    Vent du 61 DEG 59 KT</font>
+<font color="#75507B">    Visibilite CAVOK</font>
+<font color="#75507B">    Temperature 3 DEG CELSIUS</font>
+<font color="#75507B">    Point de rosee -6 DEG CELSIUS</font>
+<font color="#75507B">    Calage altimetrique QNH 1025 QFE 994</font>
+<font color="#75507B">    Informez ALPHA recue au premier contact</font>
+
+*** MAIN : *******
+Avion initialise | PID : 17559 | Immatriculation : F-XQIQ
+
+*** MAIN : *******
+Avion initialise | PID : 17560 | Immatriculation : PH-WOVI
+
+*** MAIN : *******
+Avion initialise | PID : 17561 | Immatriculation : F-ROBO
+
+*** MAIN : *******
+Avion initialise | PID : 17562 | Immatriculation : TC-FMBX
+
+*** MAIN : *******
+Avion initialise | PID : 17558 | Immatriculation : PH-QMLQ
+
+<font color="#8AE234">PH-QMLQ : Je passe le point N (sens : entree)</font>
+
+<font color="#8AE234">F-ROBO : Je passe le point W (sens : entree)</font>
+
+<font color="#8AE234">TC-FMBX : Je passe le point S (sens : entree)</font>
+
+<font color="#8AE234">PH-QMLQ : Je passe le point NE (sens : entree)</font>
+
+<font color="#8AE234">F-XQIQ : Je passe le point N (sens : entree)</font>
+
+<font color="#8AE234">F-ROBO : Je passe le point WA (sens : entree)</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">F-ROBO : MAYDAY MAYDAY MAYDAY panne moteur - demandons atterrissage d&apos;urgence piste 15R</font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">F-ROBO : MAYDAY recu, je libere la piste 15R</font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">F-ROBO : Autorise atterrissage d&apos;urgence immediat piste 15R</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">F-ROBO : Autorise atterrissage d&apos;urgence piste 15R</font>
+
+<font color="#8AE234">PH-WOVI : Je passe le point N (sens : entree)</font>
+
+<font color="#8AE234">TC-FMBX : Je passe le point E (sens : entree)</font>
+
+<font color="#8AE234">PH-QMLQ : Je passe le point E (sens : entree)</font>
+
+<font color="#8AE234">F-XQIQ : Je passe le point NE (sens : entree)</font>
+
+<font color="#8AE234">PH-WOVI : Je passe le point NE (sens : entree)</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">             Bale-Mulhouse de TC-FMBX bonjour </font>
+<font color="#34E2E2">            Avion MOYEN PORTEUR </font>
+<font color="#34E2E2">            En provenance de Istambul - Ataturk </font>
+<font color="#34E2E2">            A destination de vos installations </font>
+<font color="#34E2E2">            Avec l&apos;information ALPHA </font>
+<font color="#34E2E2">            Vitesse de croisiere 409 </font>
+<font color="#34E2E2">            Passant le point E </font>
+<font color="#34E2E2">            Demandons integration pour atterrissage complet sur piste 15R</font>
+<font color="#34E2E2">            </font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">TC-FMBX : Piste 15R occupee, executez tour d&apos;attente. Vous etes N°1 sur la sequence d&apos;atterrissage.</font>
+
+<font color="#34E2E2">TC-FMBX : La piste 15R est occupee, j attends sa liberation...</font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">TC-FMBX : Atterrissage d&apos;urgence en cours, attendez avant atterrissage</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">             Bale-Mulhouse de PH-QMLQ bonjour </font>
+<font color="#34E2E2">            Avion LEGER </font>
+<font color="#34E2E2">            En provenance de Amsterdam - Schiphol </font>
+<font color="#34E2E2">            A destination de vos installations </font>
+<font color="#34E2E2">            Avec l&apos;information ALPHA </font>
+<font color="#34E2E2">            Vitesse de croisiere 102 </font>
+<font color="#34E2E2">            Passant le point E </font>
+<font color="#34E2E2">            Demandons integration pour atterrissage complet sur piste 15R</font>
+<font color="#34E2E2">            </font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">PH-QMLQ : Piste 15R occupee, executez tour d&apos;attente. Vous etes N°2 sur la sequence d&apos;atterrissage.</font>
+
+<font color="#34E2E2">PH-QMLQ : La piste 15R est occupee, j attends sa liberation...</font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">PH-QMLQ : Atterrissage d&apos;urgence en cours, attendez avant atterrissage</font>
+
+<font color="#8AE234">F-XQIQ : Je passe le point E (sens : entree)</font>
+
+<font color="#8AE234">PH-WOVI : Je passe le point E (sens : entree)</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">             Bale-Mulhouse de F-XQIQ bonjour </font>
+<font color="#34E2E2">            Avion MOYEN PORTEUR </font>
+<font color="#34E2E2">            En provenance de Bale-Mulhouse </font>
+<font color="#34E2E2">            A destination de vos installations </font>
+<font color="#34E2E2">            Avec l&apos;information ALPHA </font>
+<font color="#34E2E2">            Vitesse de croisiere 406 </font>
+<font color="#34E2E2">            Passant le point E </font>
+<font color="#34E2E2">            Demandons integration pour atterrissage complet sur piste 15R</font>
+<font color="#34E2E2">            </font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">F-XQIQ : Piste 15R occupee, executez tour d&apos;attente. Vous etes N°3 sur la sequence d&apos;atterrissage.</font>
+
+<font color="#34E2E2">F-XQIQ : La piste 15R est occupee, j attends sa liberation...</font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">F-XQIQ : Atterrissage d&apos;urgence en cours, attendez avant atterrissage</font>
+
+<font color="#8AE234">*** AVION : *******</font>
+<font color="#8AE234">F-ROBO : Atterrissage urgent piste 15R termine - piste degagee</font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">PH-QMLQ : Autorise atterrissage immediat piste 15R </font>
+
+<font color="#34E2E2">PH-QMLQ : Autorise atterrissage piste 15R</font>
+
+<font color="#8AE234">PH-QMLQ : Atterrissage effectue, piste 15R degagee, je roule pour le parking... Aurevoir </font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">F-XQIQ : Autorise atterrissage immediat piste 15R </font>
+
+<font color="#34E2E2">F-XQIQ : Autorise atterrissage piste 15R</font>
+
+<font color="#8AE234">F-XQIQ : Atterrissage effectue, piste 15R degagee, je roule pour le parking... Aurevoir </font>
+
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">TC-FMBX : Autorise atterrissage immediat piste 15R </font>
+
+<font color="#34E2E2">TC-FMBX : Autorise atterrissage piste 15R</font>
+
+<font color="#8AE234">TC-FMBX : Atterrissage effectue, piste 15R degagee, je roule pour le parking... Aurevoir </font>
+
+*** MAIN : *******
+Places de parking occupees : 1/3
+
+*** MAIN : *******
+Places de parking occupees : 2/3
+
+*** MAIN : *******
+Places de parking occupees : 3/3
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">             Bale-Mulhouse de PH-WOVI bonjour </font>
+<font color="#34E2E2">            Avion GROS PORTEUR </font>
+<font color="#34E2E2">            En provenance de Amsterdam - Schiphol </font>
+<font color="#34E2E2">            A destination de vos installations </font>
+<font color="#34E2E2">            Avec l&apos;information ALPHA </font>
+<font color="#34E2E2">            Vitesse de croisiere 453 </font>
+<font color="#34E2E2">            Passant le point E </font>
+<font color="#34E2E2">            Demandons integration pour atterrissage complet sur piste 15L</font>
+<font color="#34E2E2">            </font>
+<font color="#CC0000">*** TWR : *******</font>
+<font color="#CC0000">PH-WOVI : Parking plein, executez deroutement ou mettez-vous en attente</font>
+
+<font color="#34E2E2">*** AVION : *******</font>
+<font color="#34E2E2">PH-WOVI : Parking plein, j&apos;attends...</font>
+^C
+*** MAIN : *******
+EXECUTION TERMINEE - RAPPORT : 0 avion(s) a/ont decolle (Piste courte : 0, Piste longue : 0), 3 a/ont atterri (Piste courte : 3, Piste longue : 0), 3 est/sont au parking
+
+<font color="#34E2E2">PH-WOVI : Interruption du vol | Derniere position : E | Quantite de carburant restante : 6000</font>
+</pre>

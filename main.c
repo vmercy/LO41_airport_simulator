@@ -15,32 +15,32 @@
 
 void handler()
 {
-    
 }
 
-void setup(int argc, char *argv[])
+void setup(int argc, char *argv[], bool wantConsole)
 {
     main_pid = getpid();
 
-    printf("\nMain PID : %i\n", main_pid);
-
-    //TODO: ask if user wants to connect control console or not
-
-    printf("Attente demarrage interface de controle ...\n");
-    sigset_t set;
-
-    sigemptyset(&set);
-
-    if (sigaddset(&set, SIGUSR1) == -1)
+    if (wantConsole)
     {
-        perror("Sigaddset error");
-        exit(EXIT_FAILURE);
+        printf("\nMain PID : %i\n", main_pid);
+
+        printf("Attente demarrage interface de controle ...\n");
+        sigset_t set;
+
+        sigemptyset(&set);
+
+        if (sigaddset(&set, SIGUSR1) == -1)
+        {
+            perror("Sigaddset error");
+            exit(EXIT_FAILURE);
+        }
+
+        int sig = SIGUSR1;
+        int *sig_ptr = &sig;
+
+        sigwait(&set, sig_ptr);
     }
-
-    int sig = SIGUSR1;
-    int *sig_ptr = &sig;
-
-    sigwait(&set, sig_ptr);
 
     IPCCleaned = False;
     srand(time(0));
@@ -139,9 +139,19 @@ void setup(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    signal(SIGUSR1, handler);
+    bool wantConsole = False;
 
-    setup(argc, argv);
+    char ans = 'n';
+    printf("\nSouhaitez-vous utiliser la console de controle pour declarer des pannes ou regenerer l'ATIS ? (O/n) : ");
+
+    scanf("%c", &ans);
+
+    if(ans=='O'){
+        signal(SIGUSR1, handler);
+        wantConsole = True;
+    }
+
+    setup(argc, argv, wantConsole);
 
     waitForPlanes();
 

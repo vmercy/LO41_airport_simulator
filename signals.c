@@ -10,7 +10,7 @@
 
 void CleanIPCs(){
 
-    ColorVerbose(MAIN,True,True,True,"EXECUTION TERMINEE - RAPPORT : %i avions ont decolle (Piste courte : %i, Piste longue : %i), %i ont atterri (Piste courte : %i, Piste longue : %i), %i sont au parking\n",*NbDecolles2500+*NbDecolles4000,*NbDecolles2500,*NbDecolles4000,*NbAtterris2500+*NbAtterris4000,*NbAtterris2500,*NbAtterris4000,*NbParking);
+    ColorVerbose(MAIN,True,True,True,"EXECUTION TERMINEE - RAPPORT : %i avion(s) a/ont decolle (Piste courte : %i, Piste longue : %i), %i a/ont atterri (Piste courte : %i, Piste longue : %i), %i est/sont au parking\n",*NbDecolles2500+*NbDecolles4000,*NbDecolles2500,*NbDecolles4000,*NbAtterris2500+*NbAtterris4000,*NbAtterris2500,*NbAtterris4000,*NbParking);
 
     sem_unlink("printfSem");
     sem_close(print);
