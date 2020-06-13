@@ -15,8 +15,7 @@
 
 void handler()
 {
-    printf("Signal recu avec succes \n");
-    exit(EXIT_SUCCESS);
+    
 }
 
 void setup(int argc, char *argv[])
@@ -25,8 +24,11 @@ void setup(int argc, char *argv[])
 
     printf("\nMain PID : %i\n", main_pid);
 
+    //TODO: ask if user wants to connect control console or not
+
     printf("Attente demarrage interface de controle ...\n");
     sigset_t set;
+
     sigemptyset(&set);
 
     if (sigaddset(&set, SIGUSR1) == -1)
@@ -67,6 +69,8 @@ void setup(int argc, char *argv[])
     NbDecolles2500 = NbParking + 6;
     NbAtterris4000 = NbParking + 7;
     NbDecolles4000 = NbParking + 8;
+    NbEmergency2500 = NbParking + 9;
+    NbEmergency4000 = NbParking + 10;
 
     *NbParking = 0;
     *NbAttenteDecollage2500 = 0;
@@ -78,6 +82,9 @@ void setup(int argc, char *argv[])
     *NbDecolles2500 = 0;
     *NbAtterris4000 = 0;
     *NbDecolles4000 = 0;
+
+    *NbEmergency2500 = 0;
+    *NbEmergency4000 = 0;
 
     print = sem_open("printfSem", SEMFLAGS, PERM, 1);
 

@@ -21,6 +21,8 @@
 
 #define NB_AIRPORTS_FRANCE 20 //BSL excluded
 #define NB_AIRPORTS_EUROPE 10 //BSL excluded
+
+#define SPEED_FACTOR 50 //execution speed factor, in percents. Decrease it for more comfort during execution with control interface
 /* End of parameters */
 
 #define DEFAULT_NB_AVION 5         //default number of aircrafts to generate //TODO: set to 20
@@ -206,6 +208,8 @@ condAtis CurrentATIS;
 bool IPCCleaned;
 int maxDistance; //distance of the farthest airport
 
+//TODO: translate variables
+
 sem_t *print;
 sem_t *MutexNbParking;
 sem_t *MutexNbAttenteDecollage2500;
@@ -227,3 +231,5 @@ int *NbAtterris2500;
 int *NbDecolles2500;
 int *NbAtterris4000;
 int *NbDecolles4000;
+int *NbEmergency2500;
+int *NbEmergency4000;

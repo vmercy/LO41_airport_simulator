@@ -6,6 +6,23 @@
 ## Introduction
 Le projet proposé ici consiste à simuler le comportement d'avions de plusieurs catégories (légers, moyens porteurs et gros porteurs) évoluant autour d'un aéroport français contrôlé, à deux pistes, selon les règles de la circulation aérienne. Qu'ils soient au départ ou à l'arrivée de cet aéroport, il s'agit de veiller à ce que tous les aéronefs puissent, par le biais de communications avec la tour de contrôle de l'infrastructure aéroportuaire, bénéficier des services de contrôle et d'alerte leur permettant de partager les deux pistes bidirectionnelles à disposition selon leur gabarit, leur ordre de départ/arrivée et la direction du vent. Des cas de pannes doivent également être gérés : il s'agit là de promettre à un avion dans une situation de détresse (Mayday) d'être prioritaire quant à l'utilisation des pistes en service.  
 
+## Compilation ##
+Les règles mises en place dans le Makefile permettent une compilation facilitée via les commandes suivantes :  
+* Compilation sans execution :
+```
+make build
+```
+
+* Compilation avec execution :
+```
+make all
+```
+
+* Compilation et exection de la console de controle (pour déclarer des pannes et regénérer l'ATIS) :
+```
+make interface
+```
+
 ## Lancement du programme en ligne de commande ##
 Le programme attend les paramètres suivants (dans l'ordre) à passer en argument sur la ligne de commande :
 * NB_AVIONS *20* : nombre de processus avion à lancer  
@@ -16,6 +33,18 @@ Pour lancer le programme avec les valeurs par défaut, il faudra donc utiliser l
 ```
 ./Simul_BSL 20 10
 ```
+
+## Declaration de pannes et regeneration de l'ATIS ##
+<u>Attention :</u> la déclaration des pannes ne peut se faire que pendant la navigation dans la région de contrôle avant l'atterrissage, c'est-à-dire pendant que l'avion affiche les informations de passage des points de report :
+<font color="#8AE234">PH-EZSZ : Je passe le point N (sens : entree)</font>
+
+<font color="#8AE234">PH-EZSZ : Je passe le point NE (sens : entree)</font>
+
+<font color="#8AE234">PH-EZSZ : Je passe le point E (sens : entree)</font>
+
+Pour déclarer une panne, il est nécessaire de démarrer le programme Simul_BSL d'abord (```./Simul_BSL <NB_AVIONS> <CAPACITE_PARKING>```), de répondre "O" à la question "Souhaitez-vous utiliser la console de controle ?" puis de démarrer la console de controle (```make run_interface```).  
+Reperez ensuite le PID de l'avion qui doit être la cible de la panne, puis saisissez-le dans l'interface de contrôle.
+
 
 ## Ordre d'affichage des informations de suivi ##
 **Attention :** Lorsque le programme est exécuté, il affiche sur la sortie standard les différentes actions des avions et de la tour de contrôle. Ces affichages sont protégés par un Mutex pour ne pas être interrompus mutuellement. L'ordre d'affichage de ces actions ne correspond pas forcément à leur déroulé dans le temps (qui dépend d'un temps d'attente généré aléatoirement - l'attente se faisant juste après la création du processus) mais à l'ordonnancement des processus. Ainsi, il n'y a rien d'anormal à voir par exemple la tour écrire :
@@ -414,3 +443,7 @@ Places de parking occupees : 2/3
 
 <font color="#8AE234">PH-QVXY : Atterrissage effectue, piste 15R degagee, je roule pour le parking... Aurevoir </font>
 </pre>
+
+### <u>Jeu d'essai 4 :</u> Simulation d'une panne ###
+
+<!--TODO: inserer jeu d'essai -->

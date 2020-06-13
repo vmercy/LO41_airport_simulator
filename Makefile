@@ -17,6 +17,9 @@ all : build run
 run :
 	./Simul_BSL
 
+run_interface:
+	./Simul_BSL_interface
+
 build: $(OBJ)
 	$(COMPILO) -o Simul_BSL $(OBJ) $(LINKFLAGS)
 

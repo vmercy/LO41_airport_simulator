@@ -38,7 +38,8 @@ bool randomizeProb(int prob)
 
 void showFinalState()
 {
-    if(!strcmp(Plane.last_pos.id,"UKN")){ //plane position is unknown (before first radio communication)
+    if (!strcmp(Plane.last_pos.id, "UKN"))
+    { //plane position is unknown (before first radio communication)
         ColorVerbose(PLANE, False, True, True, "%s-%s : Interruption du vol | Etat : avant premier contact radio | Quantite de carburant restante : %i\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.fuel);
     }
     else
@@ -48,9 +49,49 @@ void showFinalState()
     exit(EXIT_SUCCESS);
 }
 
+void emergencyLanding()
+{
+    sem_wait(print);
+    ColorVerbose(PLANE, True, True, False, "%s-%s : MAYDAY MAYDAY MAYDAY panne moteur - demandons atterrissage d'urgence piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+    ColorVerbose(TWR, True, True, False, "%s-%s : MAYDAY recu, je libere la piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+    sem_post(print);
+
+    switch ((Plane.UsedRunway == RWAY_15L) || (Plane.UsedRunway == RWAY_33R))
+    {
+    case True: //long runway, length 4000m
+    {
+        (*NbEmergency4000)++;
+        sem_wait(Piste4000);
+        sem_wait(print);
+        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(SUCCESS, True, True, False, "%s-%s : Atterrissage piste %s termine - piste degagee", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        sem_post(print);
+        sem_post(Piste4000);
+        (*NbEmergency4000)--;
+    }
+    case False: //short runway, length 2500m
+    {
+        (*NbEmergency2500)++;
+        sem_wait(Piste2500);
+        sem_wait(print);
+        ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage d'urgence immediat piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise atterrissage d'urgence piste %s", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        ColorVerbose(SUCCESS, True, True, False, "%s-%s : Atterrissage piste %s termine - piste degagee", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
+        sem_post(print);
+        sem_post(Piste2500);
+        (*NbEmergency2500)--;
+    }
+    }
+
+    exit(EXIT_FAILURE);
+}
+
 void planeProcess()
 {
     signal(SIGINT, showFinalState);
+    signal(SIGUSR1, emergencyLanding);
+
     srand(time(0) ^ getpid());
 
     //attach process to shared memory
@@ -59,10 +100,12 @@ void planeProcess()
     NbAttenteAtterrissage2500 = NbParking + 2;
     NbAttenteDecollage4000 = NbParking + 3;
     NbAttenteAtterrissage4000 = NbParking + 4;
-    NbAtterris2500 = NbParking+5;
-    NbDecolles2500 = NbParking+6;
-    NbAtterris4000 = NbParking+7;
-    NbDecolles4000 = NbParking+8;
+    NbAtterris2500 = NbParking + 5;
+    NbDecolles2500 = NbParking + 6;
+    NbAtterris4000 = NbParking + 7;
+    NbDecolles4000 = NbParking + 8;
+    NbEmergency2500 = NbParking + 9;
+    NbEmergency4000 = NbParking + 10;
 
     Plane.pid = getpid();
     strcpy(Plane.registration_suffix, randomizeRegistrationSuffix());
@@ -105,19 +148,19 @@ void planeProcess()
     case LIGHT:
         Plane.cruising_speed = 100 + rand() % 51;
         Plane.fuel_threshold = 10;
-        Plane.fuel = 60;//TODO: set plane current fuel depending on ratio airport_distance/maxDistance
+        Plane.fuel = 60; //TODO: set plane current fuel depending on ratio airport_distance/maxDistance
         break;
 
     case MEDIUM:
         Plane.cruising_speed = 400 + rand() % 51;
         Plane.fuel_threshold = 100;
-        Plane.fuel = 600;//TODO: set plane current fuel depending on ratio airport_distance/maxDistance
+        Plane.fuel = 600; //TODO: set plane current fuel depending on ratio airport_distance/maxDistance
         break;
 
     case JUMBO:
         Plane.cruising_speed = 450 + rand() % 51;
         Plane.fuel_threshold = 1000;
-        Plane.fuel = 6000;//TODO: set plane current fuel depending on ratio airport_distance/maxDistance
+        Plane.fuel = 6000; //TODO: set plane current fuel depending on ratio airport_distance/maxDistance
         break;
     }
 
@@ -131,8 +174,19 @@ void planeProcess()
 
     switch (Plane.extern_airport_type)
     {
+
     case FROM:
     {
+        sigset_t mask;
+        sigemptyset(&mask);
+        sigaddset(&mask, SIGUSR1);
+
+        if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
+        {
+            printf("\nErreur SIGPROCMASK");
+            exit(EXIT_FAILURE);
+        }
+
         Plane.last_pos = ground;
         ColorVerbose(PLANE, True, True, True, " \
             PID %i\n\
@@ -165,6 +219,7 @@ void planeProcess()
             {
                 sem_post(MutexNbAttenteAtterrissage4000);
             }
+            while(*NbEmergency4000>0); //active waiting
             sem_wait(Piste4000);
             sem_wait(print);
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
@@ -219,6 +274,7 @@ void planeProcess()
             {
                 sem_post(MutexNbAttenteAtterrissage2500);
             }
+            while(*NbEmergency2500>0); //active waiting
             sem_wait(Piste2500);
             sem_wait(print);
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
@@ -278,7 +334,16 @@ void planeProcess()
         {
             Plane.last_pos = ReportPointAtIndex(i, myRoute);
             ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s (sens : entree)\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.last_pos.id);
-            sleep(1); //TODO: set sleep time depending on cruising speed an DIST_INTER_POINTS
+            sleep(10); //TODO: set sleep time depending on cruising speed an DIST_INTER_POINTS
+        }
+        sigset_t mask;
+        sigemptyset(&mask);
+        sigaddset(&mask, SIGUSR1);
+
+        if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
+        {
+            printf("\nErreur SIGPROCMASK");
+            exit(EXIT_FAILURE);
         }
         ColorVerbose(PLANE, True, True, True, " \
             Bale-Mulhouse de %s-%s bonjour \n\
