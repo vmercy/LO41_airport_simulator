@@ -10,10 +10,13 @@
 #define NB_INT 5
 
 /* Parameters */
-#define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait WAIT_FIW before starting its activity.
-#define MAX_WAIT 25 //seconds. When a plane process is generated, it will randomly wait a certain amount of time before starting its activity, with a limit of MAX_WAIT.
+#define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait MIN_WAT before starting its activity.
+#define MAX_WAIT 35 //seconds. When a plane process is generated, it will wait a certain amount (calculated from its departure/arrival airport) of time before starting its activity, with a limit of MAX_WAIT.
 
-#define EMERGENCY_LANDING_DURATION 30
+#define EMERGENCY_LANDING_DURATION 30 //duration of an emergency landing
+
+#define WAIT_INSIDE_ROUTE_DEPARTURE 1 //seconds. The amount of time spent between two reporting points of a route when plane is leaving BSL
+#define WAIT_INSIDE_ROUTE_ARRIVAL 10 //seconds. The amount of time spent between two reporting points of a route when plane is landing at BSL
 
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
@@ -24,10 +27,10 @@
 #define NB_AIRPORTS_FRANCE 20 //BSL excluded
 #define NB_AIRPORTS_EUROPE 10 //BSL excluded
 
-#define SPEED_FACTOR 50 //execution speed factor, in percents. Decrease it for more comfort during execution with control interface
+#define LIGHT_START_FUEL 60 //amount of fuel of a light aircraft entering in BSL control zone
 /* End of parameters */
 
-#define DEFAULT_NB_AVION 5         //default number of aircrafts to generate //TODO: set to 20
+#define DEFAULT_NB_AVION 5         //default number of aircrafts to generate
 #define DEFAULT_CAPACITE_PARKING 3 //default max number of aircrafts in BSL parking
 
 #define OTAN_SPELL_MAXLENGTH 9
@@ -141,13 +144,9 @@ typedef struct
   airport dep_arr;                                             //departure or arrival airport, can be BSL in case of a local flight
   bool extern_airport_type;                                     //FROM if airport above is arrival one (departure is BSL), TO otherwise. If airport above is BSL (local flight) then extern_airport_type determines whether the aircraft is leaving or arriving (FROM/TO)
   int aircraft_type;                                           //LIGHT,MEDIUM or BIG
-  int state;                                                   //GROUND, AIR or DISTRESS
   report_pt last_pos;                                          //last known position of aircraft,
   int squawk;                                                  //squawk displayed by aircraft
-  int fuel;                                                    //fuel amount in aircraft
-  int fuel_threshold;                                          //threshold that triggers fuel distress if reached from superior value
   int cruising_speed;                                          //in kt
-  struct tm ETA;                                               //estimated time arrival, computed from cruising speed above
   int UsedRunway;
 } aircraft;
 
@@ -210,28 +209,29 @@ condAtis CurrentATIS;
 bool IPCCleaned;
 int maxDistance; //distance of the farthest airport
 
-//TODO: translate variables
-
+/* Semaphores */
 sem_t *print;
 sem_t *MutexNbParking;
-sem_t *MutexNbAttenteDecollage2500;
-sem_t *MutexNbAttenteAtterrissage2500;
-sem_t *MutexNbAttenteDecollage4000;
-sem_t *MutexNbAttenteAtterrissage4000;
+sem_t *MutexNbWaitForTO2500;
+sem_t *MutexNbWaitForLand2500;
+sem_t *MutexNbWaitForTO4000;
+sem_t *MutexNbWaitForLand4000;
 sem_t *Piste2500;
 sem_t *Piste4000;
 sem_t *AutoDecollage2500;
 sem_t *AutoDecollage4000;
 sem_t *Parking;
 
+/* Pointers to shared memory */
+
 int *NbParking;
-int *NbAttenteDecollage2500;
-int *NbAttenteAtterrissage2500;
-int *NbAttenteDecollage4000;
-int *NbAttenteAtterrissage4000;
-int *NbAtterris2500;
-int *NbDecolles2500;
-int *NbAtterris4000;
-int *NbDecolles4000;
+int *NbWaitForTO2500;
+int *NbWaitForLand2500;
+int *NbWaitForTO4000;
+int *NbWaitForLand4000;
+int *NbLanded2500;
+int *NbTO2500;
+int *NbLanded4000;
+int *NbTO4000;
 int *NbEmergency2500;
 int *NbEmergency4000;

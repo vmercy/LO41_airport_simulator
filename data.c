@@ -12,9 +12,6 @@ void initializeData()
 {
     maxDistance = 0;
 
-    for(int i =0; i<NB_EUROPEAN_COUTRIES;i++)
-        sprintf(EuropeanCountries[i].registration_prefix,""); //TODO: fix warning
-
     sprintf(EuropeanCountries[FRANCE].airport_prefix, "LF");
     sprintf(EuropeanCountries[FRANCE].registration_prefix, "F");
 

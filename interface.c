@@ -3,8 +3,7 @@
 #include <signal.h>
 
 #define BREAKDOWN 1
-#define ATIS 2
-#define EXIT 3
+#define EXIT 2
 
 int main()
 {
@@ -21,7 +20,7 @@ int main()
     printf("\nSignal de synchronisation envoye\n");
 
     int chx = 0;
-    printf("\nChoisir commande :\n1 - Declarer une panne avant atterissage \n2 - Changer l'ATIS\n3 - Fermer la console de controle\nVotre choix : ");
+    printf("\nChoisir commande :\n1 - Declarer une panne avant atterissage \n2 - Fermer la console de controle\nVotre choix : ");
     scanf("%i", &chx);
     while (chx != EXIT)
     {
@@ -38,16 +37,6 @@ int main()
                 exit(EXIT_FAILURE);
             }
             printf("\nSignal de panne envoye avec succes\n");
-            break;
-            }
-        case ATIS:
-            {
-            if (kill(target_pid, SIGUSR2) != 0)
-            {
-                printf("\nErreur de PID\n");
-                exit(EXIT_FAILURE);
-            }
-            printf("\nRequete de regeneration d'ATIS envoyee avec succes\n");
             break;
             }
         default:

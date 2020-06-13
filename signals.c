@@ -10,7 +10,7 @@
 
 void CleanIPCs(){
 
-    ColorVerbose(MAIN,True,True,True,"EXECUTION TERMINEE - RAPPORT : %i avion(s) a/ont decolle (Piste courte : %i, Piste longue : %i), %i a/ont atterri (Piste courte : %i, Piste longue : %i), %i est/sont au parking\n",*NbDecolles2500+*NbDecolles4000,*NbDecolles2500,*NbDecolles4000,*NbAtterris2500+*NbAtterris4000,*NbAtterris2500,*NbAtterris4000,*NbParking);
+    ColorVerbose(MAIN,True,True,True,"EXECUTION TERMINEE - RAPPORT : %i avion(s) a/ont decolle (Piste courte : %i, Piste longue : %i), %i a/ont atterri (Piste courte : %i, Piste longue : %i), %i est/sont au parking\n",*NbTO2500+*NbTO4000,*NbTO2500,*NbTO4000,*NbLanded2500+*NbLanded4000,*NbLanded2500,*NbLanded4000,*NbParking);
 
     sem_unlink("printfSem");
     sem_close(print);
@@ -19,10 +19,10 @@ void CleanIPCs(){
     sem_close(MutexNbParking);
 
     sem_unlink("MutexNbAttenteDecollage2500");
-    sem_close(MutexNbAttenteDecollage2500);
+    sem_close(MutexNbWaitForTO2500);
 
     sem_unlink("MutexNbAttenteAtterrissage2500");
-    sem_close(MutexNbAttenteAtterrissage2500);
+    sem_close(MutexNbWaitForLand2500);
 
     sem_unlink("SemPiste2500");
     sem_close(Piste2500);
@@ -31,10 +31,10 @@ void CleanIPCs(){
     sem_close(AutoDecollage2500);
 
     sem_unlink("MutexNbAttenteDecollage4000");
-    sem_close(MutexNbAttenteDecollage4000);
+    sem_close(MutexNbWaitForTO4000);
 
     sem_unlink("MutexNbAttenteAtterrissage4000");
-    sem_close(MutexNbAttenteAtterrissage4000);
+    sem_close(MutexNbWaitForLand4000);
 
     sem_unlink("SemPiste4000");
     sem_close(Piste4000);
@@ -45,10 +45,10 @@ void CleanIPCs(){
     sem_unlink("SemParking");
     sem_close(Parking);
     shmdt(NbParking);
-    shmdt(NbAttenteDecollage2500);
-    shmdt(NbAttenteAtterrissage2500);
-    shmdt(NbAttenteDecollage4000);
-    shmdt(NbAttenteAtterrissage4000);
+    shmdt(MutexNbWaitForTO2500);
+    shmdt(MutexNbWaitForLand2500);
+    shmdt(MutexNbWaitForTO4000);
+    shmdt(MutexNbWaitForLand4000);
     shmctl(shmid, IPC_RMID, 0);
 
     IPCCleaned = True;

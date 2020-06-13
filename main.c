@@ -61,27 +61,27 @@ void setup(int argc, char *argv[], bool wantConsole)
     }
 
     NbParking = (int *)shmat(shmid, NULL, 0);
-    NbAttenteDecollage2500 = NbParking + 1;
-    NbAttenteAtterrissage2500 = NbParking + 2;
-    NbAttenteDecollage4000 = NbParking + 3;
-    NbAttenteAtterrissage4000 = NbParking + 4;
-    NbAtterris2500 = NbParking + 5;
-    NbDecolles2500 = NbParking + 6;
-    NbAtterris4000 = NbParking + 7;
-    NbDecolles4000 = NbParking + 8;
+    NbWaitForTO2500 = NbParking + 1;
+    NbWaitForLand2500 = NbParking + 2;
+    NbWaitForTO4000 = NbParking + 3;
+    NbWaitForLand4000 = NbParking + 4;
+    NbLanded2500 = NbParking + 5;
+    NbTO2500 = NbParking + 6;
+    NbLanded4000 = NbParking + 7;
+    NbTO4000 = NbParking + 8;
     NbEmergency2500 = NbParking + 9;
     NbEmergency4000 = NbParking + 10;
 
     *NbParking = 0;
-    *NbAttenteDecollage2500 = 0;
-    *NbAttenteAtterrissage2500 = 0;
-    *NbAttenteDecollage4000 = 0;
-    *NbAttenteAtterrissage4000 = 0;
+    *NbWaitForTO2500 = 0;
+    *NbWaitForLand2500 = 0;
+    *NbWaitForTO4000 = 0;
+    *NbWaitForLand4000 = 0;
 
-    *NbAtterris2500 = 0;
-    *NbDecolles2500 = 0;
-    *NbAtterris4000 = 0;
-    *NbDecolles4000 = 0;
+    *NbLanded2500 = 0;
+    *NbTO2500 = 0;
+    *NbLanded4000 = 0;
+    *NbTO4000 = 0;
 
     *NbEmergency2500 = 0;
     *NbEmergency4000 = 0;
@@ -104,10 +104,10 @@ void setup(int argc, char *argv[], bool wantConsole)
     }
 
     MutexNbParking = sem_open("MutexParking", SEMFLAGS, PERM, 1);
-    MutexNbAttenteDecollage2500 = sem_open("MutexNbAttenteDecollage2500", SEMFLAGS, PERM, 1);
-    MutexNbAttenteAtterrissage2500 = sem_open("MutexNbAttenteAtterrissage2500", SEMFLAGS, PERM, 1);
-    MutexNbAttenteDecollage4000 = sem_open("MutexNbAttenteDecollage4000", SEMFLAGS, PERM, 1);
-    MutexNbAttenteAtterrissage4000 = sem_open("MutexNbAttenteAtterrissage4000", SEMFLAGS, PERM, 1);
+    MutexNbWaitForTO2500 = sem_open("MutexNbAttenteDecollage2500", SEMFLAGS, PERM, 1);
+    MutexNbWaitForLand2500 = sem_open("MutexNbAttenteAtterrissage2500", SEMFLAGS, PERM, 1);
+    MutexNbWaitForTO4000 = sem_open("MutexNbAttenteDecollage4000", SEMFLAGS, PERM, 1);
+    MutexNbWaitForLand4000 = sem_open("MutexNbAttenteAtterrissage4000", SEMFLAGS, PERM, 1);
 
     Piste2500 = sem_open("SemPiste2500", SEMFLAGS, PERM, 1);
     Piste4000 = sem_open("SemPiste4000", SEMFLAGS, PERM, 1);
