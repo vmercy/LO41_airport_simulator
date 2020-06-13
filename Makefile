@@ -24,8 +24,15 @@ test: clear_test
 	$(COMPILO) -o test test.c $(FLAGS) $(LINKFLAGS)
 	./test
 
+interface: clear_interface
+	$(COMPILO) -o Simul_BSL_interface interface.c $(FLAGS) $(LINKFLAGS)
+	./Simul_BSL_interface
+
+clear_interface:
+	rm -f Simul_BSL_interface
+
 clear_test:
-	rm test
+	rm -f test
 
 clean:
 	rm -f *.o core
