@@ -10,6 +10,8 @@ char *visibility[2] = {"MAUVAISE", "CAVOK"};
 
 void initializeData()
 {
+    maxDistance = 0;
+
     for(int i =0; i<NB_EUROPEAN_COUTRIES;i++)
         sprintf(EuropeanCountries[i].registration_prefix,""); //TODO: fix warning
 
@@ -82,6 +84,10 @@ void initializeData()
     BSL_pref_route[WEST].point_indexes[2] = 4;
 
     BSL.prefered_route = BSL_pref_route[NORTH]; //we consider that local flights are do to and from west
+
+    unknown.nb_aircrafts = 0;
+    sprintf(unknown.id,"UKN");
+    unknown.pref_alt = BSL_ALTITUDE;
 
     ground.nb_aircrafts = 0;
     sprintf(ground.id,"SOL");

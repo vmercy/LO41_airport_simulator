@@ -49,6 +49,8 @@ int ReadAirports()
             case 4: //distance
             {
                 EuropeanAirports[row_count].distance = kmToNM(atoi(field));
+                if(EuropeanAirports[row_count].distance>maxDistance)
+                    maxDistance = EuropeanAirports[row_count].distance;
                 break;
             }
             case 5: //route

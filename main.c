@@ -13,6 +13,7 @@
 #include "header.h"
 
 void setup(int argc, char *argv[]){
+    IPCCleaned = False;
     srand(time(0));
 
     key_t shmkey;
@@ -33,12 +34,21 @@ void setup(int argc, char *argv[]){
     NbAttenteAtterrissage2500=NbParking+2;
     NbAttenteDecollage4000=NbParking+3;
     NbAttenteAtterrissage4000=NbParking+4;
+    NbAtterris2500 = NbParking+5;
+    NbDecolles2500 = NbParking+6;
+    NbAtterris4000 = NbParking+7;
+    NbDecolles4000 = NbParking+8;
 
     *NbParking = 0;
     *NbAttenteDecollage2500 = 0;
     *NbAttenteAtterrissage2500 = 0;
     *NbAttenteDecollage4000 = 0;
     *NbAttenteAtterrissage4000 = 0;
+
+    *NbAtterris2500 = 0;
+    *NbDecolles2500 = 0;
+    *NbAtterris4000 = 0;
+    *NbDecolles4000 = 0;
 
     print = sem_open("printfSem",SEMFLAGS,PERM,1);
 
@@ -79,7 +89,6 @@ void setup(int argc, char *argv[]){
         exit(EXIT_FAILURE);
     }
     
-    
     generateAtis();
     printAtis();
 
@@ -89,8 +98,6 @@ void setup(int argc, char *argv[]){
         ColorVerbose(MAIN, False, True, False, "Erreur : le nombre total d'aeroports importes (%i) depuis %s et %s est superieur a NB_AIRPORTS_FRANCE(%i) + NB_AIRPORTS_EUROPE(%i) = (%i)", airportsReaded, EURFILE, FRAFILE, NB_AIRPORTS_FRANCE, NB_AIRPORTS_EUROPE, NB_AIRPORTS_EUROPE + NB_AIRPORTS_FRANCE);
         exit(EXIT_FAILURE);
     }
-    
-    //tower();
 
     if(createPlanesProcesses()<nbAircrafts){
         ColorVerbose(MAIN,True,True, False, "Erreur lors de la creation des processus avions");
@@ -101,8 +108,9 @@ int main(int argc, char *argv[])
 {
     setup(argc,argv);
 
-    waitForPlanes();
+    waitForPlanes();    
 
+    if(!IPCCleaned)
     CleanIPCs();
 
     return 0;

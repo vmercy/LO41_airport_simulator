@@ -9,6 +9,9 @@
 //sigterm and sigint handlers to delete IPC with semctl( semid, 1, IPC_RMID );
 
 void CleanIPCs(){
+
+    ColorVerbose(MAIN,True,True,True,"EXECUTION TERMINEE - RAPPORT : %i avions ont decolle (Piste courte : %i, Piste longue : %i), %i ont atterri (Piste courte : %i, Piste longue : %i), %i sont au parking\n",*NbDecolles2500+*NbDecolles4000,*NbDecolles2500,*NbDecolles4000,*NbAtterris2500+*NbAtterris4000,*NbAtterris2500,*NbAtterris4000,*NbParking);
+
     sem_unlink("printfSem");
     sem_close(print);
 
@@ -47,6 +50,8 @@ void CleanIPCs(){
     shmdt(NbAttenteDecollage4000);
     shmdt(NbAttenteAtterrissage4000);
     shmctl(shmid, IPC_RMID, 0);
+
+    IPCCleaned = True;
 }
 
 int InitializeSignal(){

@@ -171,6 +171,7 @@ char *aircraftCompleteType[3];
 report_pt BSL_reporting_points[7];
 report_pt ground; //used to localize aircrafts in BSL parking
 report_pt out; //used to localize aircrafts that are outside BSL region
+report_pt unknown; //default location
 route BSL_pref_route[3];
 
 /* Global functions */
@@ -202,6 +203,9 @@ pid_t main_pid;
 int semid, shmid;
 int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;
+bool IPCCleaned;
+int maxDistance; //distance of the farthest airport
+
 sem_t *print;
 sem_t *MutexNbParking;
 sem_t *MutexNbAttenteDecollage2500;
@@ -219,3 +223,7 @@ int *NbAttenteDecollage2500;
 int *NbAttenteAtterrissage2500;
 int *NbAttenteDecollage4000;
 int *NbAttenteAtterrissage4000;
+int *NbAtterris2500;
+int *NbDecolles2500;
+int *NbAtterris4000;
+int *NbDecolles4000;
