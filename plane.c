@@ -311,7 +311,7 @@ void planeProcess()
         {
             Plane.last_pos = ReportPointAtIndex(i, Plane.dep_arr.prefered_route);
             int pt_index = Plane.dep_arr.prefered_route.point_indexes[i];
-            ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s, altitude %i ft, sens : sortie de region de controle\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.last_pos.id, Plane.last_pos.pref_alt+VERTICAL_SEPARATION*(*NbPlanesPerReportPT[pt_index]));  //TODO: set altitude
+            ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s, altitude %i ft, sens : sortie de region de controle\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.last_pos.id, Plane.last_pos.pref_alt+VERTICAL_SEPARATION*(*NbPlanesPerReportPT[pt_index]));
             (*NbPlanesPerReportPT[pt_index])++;
             sleep(WAIT_INSIDE_ROUTE_DEPARTURE);
             (*NbPlanesPerReportPT[pt_index])--;
@@ -329,7 +329,7 @@ void planeProcess()
         {
             Plane.last_pos = ReportPointAtIndex(i, myRoute);
             int pt_index = Plane.dep_arr.prefered_route.point_indexes[i];
-            ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s, altitude %i ft, sens : entree dans region de controle\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.last_pos.id,Plane.last_pos.pref_alt+VERTICAL_SEPARATION*(*NbPlanesPerReportPT[pt_index])); //TODO: set altitude
+            ColorVerbose(SUCCESS, False, True, True, "%s-%s : Je passe le point %s, altitude %i ft, sens : entree dans region de controle\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, Plane.last_pos.id,Plane.last_pos.pref_alt+VERTICAL_SEPARATION*(*NbPlanesPerReportPT[pt_index]));
             (*NbPlanesPerReportPT[pt_index])++;
             sleep(WAIT_INSIDE_ROUTE_ARRIVAL);
             (*NbPlanesPerReportPT[pt_index])--;

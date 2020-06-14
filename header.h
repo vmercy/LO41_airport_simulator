@@ -119,7 +119,6 @@ typedef struct
 {
   char id[REPORT_POINT_ID_MAXLENGTH + 1];
   int pref_alt;     //in ft
-  int nb_aircrafts; //number of aircrafts having this reporting point as their last known position //TODO: delete this attribute
 } report_pt;
 
 typedef struct

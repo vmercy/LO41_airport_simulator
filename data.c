@@ -44,31 +44,24 @@ void initializeData()
 
     sprintf(BSL_reporting_points[0].id, "E");
     BSL_reporting_points[0].pref_alt = 2500;
-    BSL_reporting_points[0].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[1].id, "N");
     BSL_reporting_points[1].pref_alt = 2500;
-    BSL_reporting_points[1].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[2].id, "NE");
     BSL_reporting_points[2].pref_alt = 2500;
-    BSL_reporting_points[2].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[3].id, "S");
     BSL_reporting_points[3].pref_alt = 3000;
-    BSL_reporting_points[3].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[4].id, "W");
     BSL_reporting_points[4].pref_alt = 3000;
-    BSL_reporting_points[4].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[5].id, "WA");
     BSL_reporting_points[5].pref_alt = 3000;
-    BSL_reporting_points[5].nb_aircrafts = 0;
 
     sprintf(BSL_reporting_points[6].id, "WB");
     BSL_reporting_points[6].pref_alt = 2500;
-    BSL_reporting_points[6].nb_aircrafts = 0;
 
     BSL_pref_route[NORTH].point_indexes[0] = 0;
     BSL_pref_route[NORTH].point_indexes[1] = 2;
@@ -82,15 +75,12 @@ void initializeData()
 
     BSL.prefered_route = BSL_pref_route[NORTH]; //we consider that local flights are do to and from west
 
-    unknown.nb_aircrafts = 0;
     sprintf(unknown.id,"UKN");
     unknown.pref_alt = BSL_ALTITUDE;
 
-    ground.nb_aircrafts = 0;
     sprintf(ground.id,"SOL");
     ground.pref_alt = BSL_ALTITUDE;
 
-    out.nb_aircrafts = 0;
     sprintf(out.id,"SOL");
     ground.pref_alt = BSL_ALTITUDE;
 }
