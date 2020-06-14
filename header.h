@@ -13,7 +13,9 @@
 #define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait MIN_WAT before starting its activity.
 #define MAX_WAIT 35 //seconds. When a plane process is generated, it will wait a certain amount (calculated from its departure/arrival airport) of time before starting its activity, with a limit of MAX_WAIT.
 
-#define EMERGENCY_LANDING_DURATION 30 //duration of an emergency landing
+#define TAKE_OFF_DURATION 2 //seconds. Duration of a take-off
+#define NORMAL_LANDING_DURATION 2 //seconds. Duration of a landing in normal conditions
+#define EMERGENCY_LANDING_DURATION 5 //seconds. Duration of an emergency landing
 
 #define WAIT_INSIDE_ROUTE_DEPARTURE 1 //seconds. The amount of time spent between two reporting points of a route when plane is leaving BSL
 #define WAIT_INSIDE_ROUTE_ARRIVAL 1 //seconds. The amount of time spent between two reporting points of a route when plane is landing at BSL
@@ -26,12 +28,10 @@
 
 #define NB_AIRPORTS_FRANCE 20 //BSL excluded
 #define NB_AIRPORTS_EUROPE 10 //BSL excluded
-
-#define LIGHT_START_FUEL 60 //amount of fuel of a light aircraft entering in BSL control zone
 /* End of parameters */
 
 #define DEFAULT_NB_AVION 5         //default number of aircrafts to generate
-#define DEFAULT_CAPACITE_PARKING 3 //default max number of aircrafts in BSL parking
+#define DEFAULT_CAPACITE_PARKING 5 //default max number of aircrafts in BSL parking
 
 #define OTAN_SPELL_MAXLENGTH 9
 #define REGISTRATION_SUFFIX_MAXLENGTH 4 //max length of an aircraft registration suffix (F-___)

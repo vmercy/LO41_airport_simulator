@@ -26,12 +26,12 @@ make interface
 ## Lancement du programme en ligne de commande ##
 Le programme attend les paramètres suivants (dans l'ordre) à passer en argument sur la ligne de commande :
 * NB_AVIONS *5* : nombre de processus avion à lancer  
-* CAPACITE_PARKING *3* : capacité du parking de BSL (en nombre d'avions). Tant qu'il est plein, aucune clairance d'atterrissage ne pourra être donnée par le contrôleur.  
+* CAPACITE_PARKING *5* : capacité du parking de BSL (en nombre d'avions). Tant qu'il est plein, aucune clairance d'atterrissage ne pourra être donnée par le contrôleur.  
 Si la ligne de commande ne contient pas exactement les deux paramètres ou qu'il ne s'agit pas d'entiers naturels, il signalera l'erreur mais démarrera tout de même avec les valeurs par défaut *ci dessus*.  
 
 Pour lancer le programme avec les valeurs par défaut, il faudra donc utiliser la commande suivante :
 ```
-./Simul_BSL 5 3
+./Simul_BSL 5 5
 ```
 
 ## Declaration de pannes et regeneration de l'ATIS ##

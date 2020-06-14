@@ -125,10 +125,12 @@ void planeProcess()
     {
     case 1:
         Plane.UsedRunway = CurrentATIS.runway_LM;
+        Plane.cruising_speed = 100+rand()%100;
         break;
 
     default:
         Plane.UsedRunway = CurrentATIS.runway_big;
+        Plane.cruising_speed = 200+rand()%200;
         break;
     }
     switch (randomizeProb(DOMESTIC_PROBABILITY))
@@ -180,7 +182,7 @@ void planeProcess()
             Avion %s \n\
             A destination de %s \n\
             Avec l'information %s \n\
-            Vitesse de croisiere %i \n\
+            Vitesse de croisiere %i kt \n\
             Transpondeur %i \n\
             Actuellement au parking \n\
             Demandons roulage pour piste %s\n\
@@ -214,6 +216,7 @@ void planeProcess()
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise decollage, je m'aligne et decolle piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             sem_post(print);
+            sleep(TAKE_OFF_DURATION);
             sem_post(Piste4000);
             ColorVerbose(SUCCESS, True, True, True, "%s-%s : Decollage effectue, piste %s liberee\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             (*NbTO4000)++;
@@ -272,6 +275,7 @@ void planeProcess()
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise decollage piste %s, alignez-vous\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             ColorVerbose(PLANE, True, True, False, "%s-%s : Autorise decollage, je m'aligne et decolle piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             sem_post(print);
+            sleep(TAKE_OFF_DURATION);
             sem_post(Piste2500);
             ColorVerbose(SUCCESS, True, True, True, "%s-%s : Decollage effectue, piste %s liberee\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             (*NbTO2500)++;
@@ -349,11 +353,12 @@ void planeProcess()
             En provenance de %s \n\
             A destination de vos installations \n\
             Avec l'information %s \n\
-            Vitesse de croisiere %i \n\
+            Vitesse de croisiere %i kt\n\
+            Transpondeur %i \n\
             Passant le point %s \n\
             Demandons integration pour atterrissage complet sur piste %s\n\
             ",
-                     Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed, Plane.last_pos.id, runways[Plane.UsedRunway]);
+                     Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, aircraftCompleteType[Plane.aircraft_type], Plane.dep_arr.fullname, OTAN_SPELL[CurrentATIS.id - 65], Plane.cruising_speed, Plane.squawk, Plane.last_pos.id, runways[Plane.UsedRunway]);
 
         //DEBUT ALGORITHME
         switch ((Plane.UsedRunway == RWAY_15L) || (Plane.UsedRunway == RWAY_33R))
@@ -391,6 +396,7 @@ void planeProcess()
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage immediat piste %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             ColorVerbose(PLANE, False, True, False, "%s-%s : Autorise atterrissage piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             sem_post(print);
+            sleep(NORMAL_LANDING_DURATION);
             sem_post(Piste4000);
             ColorVerbose(SUCCESS, False, True, False, "%s-%s : Atterrissage effectue, piste %s degagee, je roule pour le parking... Aurevoir \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             (*NbLanded4000)++;
@@ -449,6 +455,7 @@ void planeProcess()
             ColorVerbose(TWR, True, True, False, "%s-%s : Autorise atterrissage immediat piste %s \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             ColorVerbose(PLANE, False, True, False, "%s-%s : Autorise atterrissage piste %s\n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             sem_post(print);
+            sleep(NORMAL_LANDING_DURATION);            
             sem_post(Piste2500);
             ColorVerbose(SUCCESS, False, True, False, "%s-%s : Atterrissage effectue, piste %s degagee, je roule pour le parking... Aurevoir \n", Plane.dep_arr.host_country.registration_prefix, Plane.registration_suffix, runways[Plane.UsedRunway]);
             (*NbLanded2500)++;
