@@ -61,7 +61,7 @@ void setup(int argc, char *argv[], bool wantConsole)
     }
 
     NbParking = (int *)shmat(shmid, NULL, 0);
-    NbWaitForTO2500 = NbParking + 1;
+    NbWaitForTO2500 = NbParking + 1; //shared memory addresses are consecutive
     NbWaitForLand2500 = NbParking + 2;
     NbWaitForTO4000 = NbParking + 3;
     NbWaitForLand4000 = NbParking + 4;
@@ -87,6 +87,22 @@ void setup(int argc, char *argv[], bool wantConsole)
     *NbEmergency4000 = 0;
 
     print = sem_open("printfSem", SEMFLAGS, PERM, 1);
+
+    key_t shmkey2;
+    shmkey2 = ftok(argv[0], 6);
+    shmid2 = shmget(shmkey2, NB_REPORT_POINTS * sizeof(int), 0644 | IPC_CREAT);
+    if (shmid2 < 0)
+    { /* shared memory error check */
+        perror("shmget\n");
+        exit(EXIT_FAILURE);
+    }
+
+    NbPlanesPerReportPT[0] = (int *)shmat(shmid2, NULL, 0);
+    for(int i = 1; i<NB_REPORT_POINTS; i++)
+        NbPlanesPerReportPT[i] = NbPlanesPerReportPT[i-1]+1;
+
+    for(int i = 0; i<NB_REPORT_POINTS; i++)
+        *NbPlanesPerReportPT[i]=0;
 
     initializeData();
 

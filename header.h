@@ -7,7 +7,7 @@
 #define SEMFLAGS (O_CREAT | O_EXCL)
 
 /* Shared memory */
-#define NB_INT 5
+#define NB_INT 10 //number of integers in shared memory
 
 /* Parameters */
 #define MIN_WAIT 5 //seconds. When a plane process is generated, it will inevitably wait MIN_WAT before starting its activity.
@@ -16,7 +16,7 @@
 #define EMERGENCY_LANDING_DURATION 30 //duration of an emergency landing
 
 #define WAIT_INSIDE_ROUTE_DEPARTURE 1 //seconds. The amount of time spent between two reporting points of a route when plane is leaving BSL
-#define WAIT_INSIDE_ROUTE_ARRIVAL 10 //seconds. The amount of time spent between two reporting points of a route when plane is landing at BSL
+#define WAIT_INSIDE_ROUTE_ARRIVAL 1 //seconds. The amount of time spent between two reporting points of a route when plane is landing at BSL
 
 #define EURFILE "AeroportsEurope.csv" //csv list of european airports
 #define FRAFILE "AeroportsFrance.csv" //csv list of french airports
@@ -45,7 +45,7 @@
 #define IATA_MAXLENGTH 3                //max length of an IATA code
 
 #define BSL_ALTITUDE 885 //altitude of BSL airport, used to compute the difference QNH-QFE
-#define SEPARATION 
+#define VERTICAL_SEPARATION 1000 //in feet, vertical separation between two aircrafts approching the same reporting point
 
 /* Roles for display on terminal */
 #define MAIN 0  //black
@@ -119,7 +119,7 @@ typedef struct
 {
   char id[REPORT_POINT_ID_MAXLENGTH + 1];
   int pref_alt;     //in ft
-  int nb_aircrafts; //number of aircrafts having this reporting point as their last known position
+  int nb_aircrafts; //number of aircrafts having this reporting point as their last known position //TODO: delete this attribute
 } report_pt;
 
 typedef struct
@@ -203,7 +203,7 @@ report_pt ReportPointAtIndex(int point_index, route Route);
 
 /* Global Variables */
 pid_t main_pid;
-int semid, shmid;
+int shmid, shmid2; //first id is used to share int variables, second one is used to share reporting points
 int nbAircrafts, parkingCapacity;
 condAtis CurrentATIS;
 bool IPCCleaned;
@@ -235,3 +235,5 @@ int *NbLanded4000;
 int *NbTO4000;
 int *NbEmergency2500;
 int *NbEmergency4000;
+
+int *NbPlanesPerReportPT[NB_REPORT_POINTS]; //number of planes having a reporting point as last position
