@@ -19,6 +19,17 @@ void handler()
 
 void setup(int argc, char *argv[], bool wantConsole)
 {
+
+    if(NB_AIRPORTS_EUROPE<0||NB_AIRPORTS_EUROPE>10){
+        printf("\nNombre d aeroports europeens incorrect\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if(NB_AIRPORTS_FRANCE<0||NB_AIRPORTS_FRANCE>20){
+        printf("\nNombre d aeroports francais incorrect\n");
+        exit(EXIT_FAILURE);
+    }
+
     main_pid = getpid();
 
     if (wantConsole)

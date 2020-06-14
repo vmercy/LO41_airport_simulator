@@ -49,7 +49,17 @@ void CleanIPCs(){
     shmdt(MutexNbWaitForLand2500);
     shmdt(MutexNbWaitForTO4000);
     shmdt(MutexNbWaitForLand4000);
+    shmdt(NbLanded2500);
+    shmdt(NbTO2500);
+    shmdt(NbLanded4000);
+    shmdt(NbTO4000);
+    shmdt(NbEmergency2500);
+    shmdt(NbEmergency4000);
+    
     shmctl(shmid, IPC_RMID, 0);
+
+    shmdt(NbPlanesPerReportPT);
+    shmctl(shmid2, IPC_RMID, 0);
 
     IPCCleaned = True;
 }

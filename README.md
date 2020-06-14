@@ -60,6 +60,9 @@ RA-QOEO : Autorise atterrissage immediat
 ```
 Dans cet exemple, le processus correspondant à l'avion **RA-QOEO** a attendu moins longtemps que celui qui correspond à **RA-PHAS**, ce dernier est donc mis en attente. Mais l'ordre d'affichage de ces événements ne correspond pas à leur ordre de survenue.
 
+## Fin de l'execution ##
+Si le parking est saturé et qu'aucun avion n'en sort (plus d'avion généré), il faudra interrompre l'exécution du programme principal en opérant un **Ctrl + C** (ou envoi de SIGINT). Le nettoyage de la mémoire partagée et des sémaphores aura lieu normalement et le rapport de fin d'exécution sera affiché. Les avions qui n'ont pas encore pris contact avec la tour pour opérer se manifesteront.
+
 ## Troubleshooting ##
 ```
 Makefile:18: recipe for target 'run' failed
